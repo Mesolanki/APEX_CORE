@@ -1,0 +1,18 @@
+# Environment Variables — NEVER COMMIT THESE
+.env
+.env.local
+.env.production
+
+# Dependencies
+node_modules/
+
+# Uploads (user files)
+uploads/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
