@@ -110,8 +110,8 @@ function Home() {
             }
 
             // 2. Hero Parallax
-            if (document.querySelector(".hero-bg")) {
-                gsap.to(".hero-bg", {
+            if (mainRef.current.querySelector(".hero-bg")) {
+                gsap.to(mainRef.current.querySelector(".hero-bg"), {
                     yPercent: 30, scale: 1.05,
                     scrollTrigger: { trigger: "header.hero-section", start: "top top", end: "bottom top", scrub: true }
                 });
@@ -354,7 +354,7 @@ function Home() {
                         <motion.img 
                             animate={{ x: [0, -2, 2, 0], filter: ["hue-rotate(0deg)", "hue-rotate(10deg)", "hue-rotate(-10deg)", "hue-rotate(0deg)"] }}
                             transition={{ duration: 0.2, repeat: Infinity, repeatType: "mirror", repeatDelay: 3 }}
-                            src="/car-side.png" className="w-full h-full object-contain drop-shadow-[0_0_30px_rgba(220,38,38,0.2)] md:scale-125 hover:brightness-125 transition-all" alt="LH Side" 
+                            src={`${import.meta.env.BASE_URL}car-side.png`} className="w-full h-full object-contain drop-shadow-[0_0_30px_rgba(220,38,38,0.2)] md:scale-125 hover:brightness-125 transition-all" alt="LH Side" 
                         />
                     </div>
                     <div className="txt-1 absolute left-4 md:left-10 z-20 border-l-4 border-cyan-500 px-6 py-4 glass-card shadow-2xl transition-transform duration-300 group-hover/scan:translate-y-[-10px]">
@@ -371,7 +371,7 @@ function Home() {
                          <motion.img 
                             animate={{ opacity: [1, 0.8, 1, 0.9, 1] }}
                             transition={{ duration: 0.3, repeat: Infinity, repeatDelay: 2 }}
-                            src="/car-top.png" className="w-full h-full object-contain drop-shadow-[0_0_40px_rgba(255,255,255,0.1)] md:scale-125" alt="Top View" 
+                            src={`${import.meta.env.BASE_URL}car-top.png`} className="w-full h-full object-contain drop-shadow-[0_0_40px_rgba(255,255,255,0.1)] md:scale-125" alt="Top View" 
                          />
                     </div>
                     <div className="txt-2 absolute right-4 md:right-10 z-20 border-r-4 border-white px-6 py-4 glass-card shadow-2xl opacity-0 text-right">
@@ -388,7 +388,7 @@ function Home() {
                         <motion.img 
                             animate={{ x: [-1, 1, -1, 0], y: [1, -1, 1, 0] }}
                             transition={{ duration: 0.1, repeat: Infinity, repeatDelay: 4 }}
-                            src="/car-detail.png" className="w-full h-full object-contain drop-shadow-[0_0_50px_rgba(0,242,255,0.2)] md:scale-125" alt="Exploded Parts" 
+                            src={`${import.meta.env.BASE_URL}car-detail.png`} className="w-full h-full object-contain drop-shadow-[0_0_50px_rgba(0,242,255,0.2)] md:scale-125" alt="Exploded Parts" 
                         />
                     </div>
                     <div className="txt-3 absolute left-4 md:left-10 z-20 border-l-4 border-cyan-500 px-6 py-4 glass-card shadow-2xl opacity-0">
