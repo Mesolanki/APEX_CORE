@@ -56,7 +56,8 @@ const createPost = async (req, res) => {
         let mediaUrl = "";
 
         if (req.file) {
-            mediaUrl = `http://localhost:8050/uploads/${req.file.filename}`;
+            const backendUrl = process.env.BACKEND_URL || 'http://localhost:8050';
+            mediaUrl = `${backendUrl}/uploads/${req.file.filename}`;
         }
 
         const category = ALLOWED_CATEGORIES.includes(rawCategory) ? rawCategory : 'GENERAL';

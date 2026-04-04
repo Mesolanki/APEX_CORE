@@ -8,7 +8,7 @@ passport.use(new GoogleStrategy({
     // 🛠️ USE GOOGLE SECRETS FROM .ENV
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: "http://localhost:8050/user/auth/google/callback"
+    callbackURL: `${process.env.BACKEND_URL || 'http://localhost:8050'}/user/auth/google/callback`
 },
     async (accessToken, refreshToken, profile, done) => {
         try {
