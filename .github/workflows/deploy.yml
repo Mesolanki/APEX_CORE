@@ -44,8 +44,10 @@ jobs:
         run: |
           mkdir -p deploy
           cp -r frontend/dist/* deploy/
+          cp deploy/index.html deploy/404.html
           mkdir -p deploy/admin
           cp -r admin/dist/* deploy/admin/
+          cp deploy/admin/index.html deploy/admin/404.html
 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4
