@@ -72,7 +72,8 @@ function Login() {
         }
     };
     const handleGoogleAuth = () => {
-        window.location.href = 'http://localhost:8050/user/auth/google';
+        const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:8050';
+        window.location.href = `${backendUrl}/user/auth/google`;
     };
 
     return (
