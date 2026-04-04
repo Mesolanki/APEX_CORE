@@ -11,7 +11,9 @@ const getDrivers = async (req, res) => {
 
 const createDriver = async (req, res) => {
     try {
-        const newDriver = new Driver(req.body);
+        // Auto-generate a display ID
+        const driverId = `DRV_${Date.now().toString(36).toUpperCase()}${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
+        const newDriver = new Driver({ ...req.body, driverId });
         const savedDriver = await newDriver.save();
         res.status(201).json(savedDriver);
     } catch (error) {

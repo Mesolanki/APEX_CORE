@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
 const driverSchema = new mongoose.Schema({
+    driverId: { type: String, default: '' },
     alias: { type: String, required: true },
     rank: { type: Number, default: 0 },
     country: String,

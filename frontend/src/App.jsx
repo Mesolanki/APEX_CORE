@@ -24,6 +24,8 @@ import Checkout from './pages/Checkout';
 import Library from './pages/Librarary';
 import ThankYou from './pages/ThankYou';
 import AdminAddEvent from './pages/AdminAddEvent';
+import AdminDashboard from './pages/AdminDashboard';
+import AdminEditGame from './pages/AdminEditGame';
 
 function LegacyGameEventRedirect() {
   const { id } = useParams();
@@ -80,7 +82,9 @@ const App = () => {
             <Route element={<PrivateRoutes />}>
               <Route path="/profile" element={<UserProfile />} />
               <Route path="/admin" element={<Admin />} />
+              <Route path="/admin/dashboard" element={<AdminDashboard />} />
               <Route path="/admin/add-event" element={<AdminAddEvent />} />
+              <Route path="/admin/edit-game/:id" element={<AdminEditGame />} />
               <Route path="/login-success" element={<LoginSuccess />} />
             </Route>
 

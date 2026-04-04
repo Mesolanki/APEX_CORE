@@ -11,7 +11,9 @@ const getEvents = async (req, res) => {
 
 const createEvent = async (req, res) => {
     try {
-        const newEvent = new Event(req.body);
+        // Auto-generate a display ID
+        const eventId = `EVT_${Date.now().toString(36).toUpperCase()}${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
+        const newEvent = new Event({ ...req.body, eventId });
         const savedEvent = await newEvent.save();
         res.status(201).json(savedEvent);
     } catch (error) {

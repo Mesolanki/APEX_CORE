@@ -178,7 +178,18 @@ function Checkout() {
             }
 
             localStorage.removeItem(LS_KEY);
-            navigate('/thank-you', { state: { orderId: res.data.orderId, isEventEnrollment } });
+            navigate('/thank-you', {
+                state: {
+                    orderId: res.data.orderId,
+                    isEventEnrollment,
+                    items: items.map(row => ({
+                        id: row.id,
+                        title: (row.title || '').replace(/_/g, ' '),
+                        priceUsd: Number(row.priceUsd) || 0,
+                        image: row.image,
+                    })),
+                }
+            });
         } catch (e) {
             setStatus('idle');
             const data = e.response?.data;

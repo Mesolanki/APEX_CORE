@@ -66,8 +66,13 @@ const seedGameData = async (req, res) => {
                 });
             }
 
+            // Coordination with frontend mock data IDs
+            const id = index < 6 
+                ? `SYS-0${index + 1}` 
+                : `CHASSIS_${(index + 1).toString().padStart(3, '0')}`;
+
             return {
-                id: `CHASSIS_${(index + 1).toString().padStart(3, '0')}`,
+                id,
                 title: car.title,
                 genre: car.genre,
                 price: price,
@@ -164,14 +169,14 @@ const seedGameData = async (req, res) => {
             ],
             upcomingReleases: [
                 {
-                    id: "DLC_01", title: "TWIN_TURBO_PACK", eta: "Q3_2026", type: "TUNING_KIT",
+                    id: "DLC_01", title: "TWIN_TURBO_PACK", eta: "Q3_2026", category: "TUNING_KIT",
                     image: "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=800&auto=format&fit=crop", status: "IN_GARAGE",
                     description: "Bolt-on twin-scroll kits, intercooler piping, and ECU maps for supported chassis.",
                     highlights: ["50+ new parts", "Heat soak simulation", "Blueprint sharing"],
                     screenshots: [{ category: "CONTENT", url: "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=1200&auto=format&fit=crop" }]
                 },
                 {
-                    id: "DLC_02", title: "CARBON_AERO_KIT", eta: "Q4_2026", type: "BODY_MOD",
+                    id: "DLC_02", title: "CARBON_AERO_KIT", eta: "Q4_2026", category: "BODY_MOD",
                     image: "https://images.unsplash.com/photo-1544636331-e26879cd4d9b?q=80&w=800&auto=format&fit=crop", status: "PROTOTYPE",
                     description: "Dry carbon splitters, canards, and active aero wings with wind-tunnel readouts in the garage.",
                     highlights: ["Wind tunnel viz", "Paint carbon weave direction", "Downforce telemetry overlay"],
@@ -201,10 +206,10 @@ const seedGameData = async (req, res) => {
                     signatureTrack: "Silverstone GP · Dusk"
                 }
             ],
-            trackComms: [
-                { time: "04:00:12", type: "WEATHER", msg: "Heavy rain detected on Sector 4. Equip wet tires." },
-                { time: "03:45:00", type: "UPDATE", msg: "Server maintenance scheduled in 2 hours." },
-                { time: "02:10:05", type: "EVENT", msg: "Double REP weekend is now active!" }
+            commsLogs: [
+                { time: "04:00:12", category: "WEATHER", msg: "Heavy rain detected on Sector 4. Equip wet tires." },
+                { time: "03:45:00", category: "UPDATE", msg: "Server maintenance scheduled in 2 hours." },
+                { time: "02:10:05", category: "EVENT", msg: "Double REP weekend is now active!" }
             ]
         };
 
@@ -318,12 +323,20 @@ const getGameItemDetail = async (req, res) => {
     }
 };
 
+const _genId = (prefix, len = 4) => {
+    const hex = Date.now().toString(36).toUpperCase() + Math.random().toString(36).substring(2, 2 + len).toUpperCase();
+    return `${prefix}_${hex}`;
+};
+
 const addMarketItem = async (req, res) => {
     try {
         const { 
-            id, title, genre, price, image, releaseDate, description,
+            title, genre, price, image, releaseDate, description,
             screenshots, minSpecs, recommendedSpecs, downloadSize
         } = req.body;
+
+        // Auto-generate ID if not provided
+        const id = req.body.id || _genId('CHASSIS');
         
         const updateRes = await Game.updateOne({}, {
             $push: { globalMarket: { 
@@ -338,7 +351,7 @@ const addMarketItem = async (req, res) => {
 
         const gameData = await Game.findOne();
 
-        res.status(201).json({ message: "Vehicle added to Showroom!", data: gameData });
+        res.status(201).json({ message: "Vehicle added to Showroom!", id, data: gameData });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -351,10 +364,11 @@ const addLiveEvent = async (req, res) => {
 
         if (!gameData) return res.status(404).json({ message: "Database not seeded yet." });
 
-        gameData.liveEvents.push({ target, prize, class: eventClass, status, ...rest });
+        const id = _genId('EVT');
+        gameData.liveEvents.push({ id, target, prize, class: eventClass, status, ...rest });
         await gameData.save();
 
-        res.status(201).json({ message: "Live Event added to Mainframe!", data: gameData });
+        res.status(201).json({ message: "Live Event added to Mainframe!", id, data: gameData });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -362,15 +376,16 @@ const addLiveEvent = async (req, res) => {
 
 const addUpcomingRelease = async (req, res) => {
     try {
-        const { id, title, eta, type, image, status } = req.body;
+        const { title, eta, type, image, status } = req.body;
         const gameData = await Game.findOne();
 
         if (!gameData) return res.status(404).json({ message: "Database not seeded yet." });
 
+        const id = req.body.id || _genId('DLC');
         gameData.upcomingReleases.push({ id, title, eta, type, image, status });
         await gameData.save();
 
-        res.status(201).json({ message: "Upcoming Release added!", data: gameData });
+        res.status(201).json({ message: "Upcoming Release added!", id, data: gameData });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -409,6 +424,155 @@ const joinLiveEvent = async (req, res) => {
     }
 };
 
+const updateGameItem = async (req, res) => {
+    try {
+        const { category, id } = req.params;
+        const updatedData = req.body;
+        const decodedId = decodeURIComponent(id || "");
+        console.log(`>>> [Admin]: Update attempt on ${category}/${decodedId}`);
+
+        const gameData = await Game.findOne();
+        if (!gameData) return res.status(404).json({ message: "Game data not found." });
+
+        let arrayName;
+        switch (category) {
+            case "showroom": 
+            case "globalMarket": arrayName = "globalMarket"; break;
+            case "event":    
+            case "liveEvents":   arrayName = "liveEvents"; break;
+            case "release":  
+            case "upcomingReleases": arrayName = "upcomingReleases"; break;
+            case "featured":
+                if (gameData.featuredAsset.id === decodedId) {
+                    gameData.featuredAsset = { ...gameData.featuredAsset, ...updatedData };
+                    await gameData.save();
+                    return res.status(200).json({ message: "Featured asset updated", item: gameData.featuredAsset });
+                }
+                return res.status(404).json({ message: "Featured asset not found" });
+            default:
+                return res.status(400).json({ message: "Invalid category" });
+        }
+
+        const items = gameData[arrayName];
+        console.log(`>>> [Admin]: Searching in ${arrayName} (Size: ${items.length})`);
+        const itemIndex = items.findIndex(item => (item.id === decodedId || item.target === decodedId));
+        if (itemIndex === -1) {
+            console.warn(`>>> [Admin]: Target ${decodedId} not found in ${arrayName}`);
+            return res.status(404).json({ message: "Item not found in registry" });
+        }
+
+        // Update the item by merging new data
+        gameData[arrayName][itemIndex] = { ...gameData[arrayName][itemIndex].toObject(), ...updatedData };
+        
+        await gameData.save();
+        res.status(200).json({ message: `${category} updated successfully`, item: gameData[arrayName][itemIndex] });
+    } catch (error) {
+        res.status(500).json({ message: "Failed to update item", error: error.message });
+    }
+};
+
+const deleteGameItem = async (req, res) => {
+    try {
+        const { category, id } = req.params;
+        const decodedId = decodeURIComponent(id || "");
+        console.log(`>>> [Admin]: Delete attempt on ${category}/${decodedId}`);
+
+        const gameData = await Game.findOne();
+        if (!gameData) return res.status(404).json({ message: "Game data not found." });
+
+        let arrayName;
+        switch (category) {
+            case "showroom": 
+            case "globalMarket": arrayName = "globalMarket"; break;
+            case "event":    
+            case "liveEvents":   arrayName = "liveEvents"; break;
+            case "release":  
+            case "upcomingReleases": arrayName = "upcomingReleases"; break;
+            default:
+                return res.status(400).json({ message: "Invalid category" });
+        }
+
+        const originalLength = gameData[arrayName].length;
+        gameData[arrayName] = gameData[arrayName].filter(item => (item.id !== decodedId && item.target !== decodedId));
+
+        if (gameData[arrayName].length === originalLength) {
+            return res.status(404).json({ message: "Item not found in registry" });
+        }
+
+        await gameData.save();
+        res.status(200).json({ message: `${category} deleted from registry` });
+    } catch (error) {
+        res.status(500).json({ message: "Failed to delete item", error: error.message });
+    }
+};
+
+const incrementDownloadCount = async (req, res) => {
+    try {
+        const { category, id } = req.params;
+        const decodedId = decodeURIComponent(id || "");
+        const gameData = await Game.findOne();
+
+        if (!gameData) return res.status(404).json({ message: "Game data not found." });
+
+        let item;
+        if (category === "featured") {
+            if (gameData.featuredAsset.id === decodedId) {
+                gameData.featuredAsset.downloads = (gameData.featuredAsset.downloads || 0) + 1;
+                item = gameData.featuredAsset;
+            }
+        } else if (category === "showroom") {
+            const idx = gameData.globalMarket.findIndex(g => g.id === decodedId);
+            if (idx !== -1) {
+                gameData.globalMarket[idx].downloads = (gameData.globalMarket[idx].downloads || 0) + 1;
+                item = gameData.globalMarket[idx];
+            }
+        }
+
+        if (!item) return res.status(404).json({ message: "Item not found" });
+
+        await gameData.save();
+        res.status(200).json({ message: "Download count incremented", downloads: item.downloads });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+const postGameReview = async (req, res) => {
+    try {
+        const { category, id } = req.params;
+        const { username, rating, comment } = req.body;
+        const decodedId = decodeURIComponent(id || "");
+
+        if (!username || !rating) {
+            return res.status(400).json({ message: 'Username and rating are required.' });
+        }
+
+        const gameData = await Game.findOne();
+        if (!gameData) return res.status(404).json({ message: "Game data not found." });
+
+        let item;
+        if (category === "featured") {
+            if (gameData.featuredAsset.id === decodedId) {
+                item = gameData.featuredAsset;
+            }
+        } else if (category === "showroom") {
+            item = gameData.globalMarket.find(g => g.id === decodedId);
+        }
+
+        if (!item) return res.status(404).json({ message: "Item not found" });
+
+        item.reviews.push({ username, rating: Number(rating), comment });
+        
+        const total = item.reviews.reduce((sum, r) => sum + r.rating, 0);
+        item.avgRating = +(total / item.reviews.length).toFixed(1);
+
+        await gameData.save();
+        res.status(201).json({ message: 'Review submitted!', reviews: item.reviews, avgRating: item.avgRating });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 module.exports = {
     seedGameData,
     getGameData,
@@ -418,5 +582,9 @@ module.exports = {
     addMarketItem,
     addLiveEvent,
     addUpcomingRelease,
-    joinLiveEvent
+    joinLiveEvent,
+    incrementDownloadCount,
+    postGameReview,
+    updateGameItem,
+    deleteGameItem
 };

@@ -53,6 +53,31 @@ function SpecBlock({ title, specs, variant }) {
     );
 }
 
+function StarRating({ value = 0, max = 5, onChange }) {
+    const [hovered, setHovered] = useState(0);
+    const display = hovered || value;
+    return (
+        <div className="flex items-center gap-1">
+            {Array.from({ length: max }, (_, i) => i + 1).map((star) => (
+                <button
+                    key={star}
+                    type="button"
+                    onMouseEnter={() => onChange && setHovered(star)}
+                    onMouseLeave={() => onChange && setHovered(0)}
+                    onClick={() => onChange && onChange(star)}
+                    className={`text-xl transition-colors ${
+                        star <= display
+                            ? 'text-cyan-400'
+                            : 'text-gray-700'
+                    } ${onChange ? 'cursor-pointer hover:scale-110' : 'cursor-default'}`}
+                >
+                    ★
+                </button>
+            ))}
+        </div>
+    );
+}
+
 function GameDetail() {
     const { category, id } = useParams();
     const navigate = useNavigate();
@@ -65,6 +90,12 @@ function GameDetail() {
     const [error, setError] = useState('');
     const [lightbox, setLightbox] = useState(null);
     const [activeScreenshotCat, setActiveScreenshotCat] = useState('ALL');
+    const [activeTab, setActiveTab] = useState('intel'); // intel | specs | reviews
+
+    // Review form
+    const [reviewForm, setReviewForm] = useState({ username: '', rating: 0, comment: '' });
+    const [reviewStatus, setReviewStatus] = useState('idle'); // idle | loading | success | error
+    const [reviewMsg, setReviewMsg] = useState('');
 
     // --- CUSTOM CURSOR ---
     useLayoutEffect(() => {
@@ -124,6 +155,7 @@ function GameDetail() {
     }, [category, id]);
 
     const item = useMemo(() => mergeDetailItem(payload?.item), [payload]);
+    const reviews = item?.reviews || [];
     const meta = categoryMeta[category] || categoryMeta.showroom;
 
     // Mapping new formatted screenshots logic
@@ -132,7 +164,6 @@ function GameDetail() {
             return item?.image ? [{ category: 'ALL', url: item.image }] : [];
         }
         return item.screenshots.map(s => {
-            // Handle legacy format if string
             if (typeof s === 'string') return { category: 'ALL', url: s };
             return { category: s.category || 'ALL', url: s.url };
         });
@@ -149,14 +180,30 @@ function GameDetail() {
         return formattedScreenshots.filter(s => s.category === activeScreenshotCat);
     }, [activeScreenshotCat, formattedScreenshots]);
 
-    const handlePrimaryCta = () => {
+    const handlePrimaryCta = async () => {
         const price = parsePriceFromGame(item?.price);
         
+        // Always increment download count when CTA is clicked
+        try {
+            const safeId = encodeURIComponent(id || '');
+            await api.post(`/api/games/detail/${category}/${safeId}/download`);
+        } catch (e) {
+            console.error("Failed to log download:", e);
+        }
+
         if (price === 0) {
-            // Directly start download / go to thank you page for free games
             navigate('/thank-you', {
                 state: {
-                    orderId: `FREE-${item?.id || 'DOWNLOAD'}-${Date.now()}`
+                    orderId: `FREE-${item?.id || 'DOWNLOAD'}-${Date.now()}`,
+                    items: [{
+                        id: item?.id,
+                        title: (item?.title || '').replace(/_/g, ' '),
+                        priceUsd: 0,
+                        image: item?.image,
+                        genre: item?.genre,
+                        description: item?.description,
+                    }],
+                    screenshots: formattedScreenshots.slice(0, 4).map(s => s.url),
                 }
             });
             return;
@@ -175,6 +222,32 @@ function GameDetail() {
         });
     };
 
+    const handleReviewSubmit = async (e) => {
+        e.preventDefault();
+        if (!reviewForm.username || !reviewForm.rating) {
+            setReviewMsg('Alias and rating required.');
+            setReviewStatus('error');
+            return;
+        }
+        setReviewStatus('loading');
+        try {
+            const safeId = encodeURIComponent(id || '');
+            await api.post(`/api/games/detail/${category}/${safeId}/review`, reviewForm);
+            
+            // Re-fetch to get updated reviews/rating
+            const res = await api.get(`/api/games/detail/${category}/${safeId}`);
+            setPayload(res.data);
+            
+            setReviewForm({ username: '', rating: 0, comment: '' });
+            setReviewStatus('success');
+            setReviewMsg('Review transmitted successfully.');
+            setTimeout(() => { setReviewMsg(''); setReviewStatus('idle'); }, 3000);
+        } catch (e) {
+            setReviewStatus('error');
+            setReviewMsg(e.response?.data?.message || 'Transmission failed.');
+        }
+    };
+
     if (loading) {
         return (
             <div className="min-h-screen bg-black flex flex-col items-center justify-center text-cyan-500 font-mono">
@@ -184,10 +257,33 @@ function GameDetail() {
         );
     }
 
+    if (error || !item) {
+        return (
+            <div className="min-h-screen bg-black flex flex-col items-center justify-center text-red-500 font-mono p-8 text-center">
+                <FiX className="text-6xl mb-6 animate-pulse" />
+                <h1 className="text-2xl font-black uppercase tracking-widest mb-4">UPLINK_FAILURE</h1>
+                <p className="text-[10px] text-gray-500 uppercase tracking-[0.4em] mb-12 max-w-md leading-relaxed">
+                    {error || "THE_REQUESTED_DATA_MODULE_IS_MISSING_OR_CORRUPT. RE-CALIBRATE_SEARCH_PARAMETERS."}
+                </p>
+                <button 
+                    onClick={() => navigate('/')}
+                    className="px-8 py-3 bg-red-900/20 border border-red-500 text-red-500 text-[10px] font-black uppercase tracking-widest hover:bg-red-500 hover:text-black transition-all"
+                >
+                    RETURN_TO_BASE
+                </button>
+            </div>
+        );
+    }
+
+    const tabs = [
+        { id: 'intel', label: 'Intel', icon: FiCrosshair },
+        { id: 'specs', label: 'Requirements', icon: FiCpu },
+        { id: 'reviews', label: `Comm-Logs (${reviews.length})`, icon: FiZap },
+    ];
+
     return (
         <div ref={mainRef} className="min-h-screen bg-[#020202] text-gray-200 font-mono overflow-x-hidden selection:bg-cyan-600 selection:text-white cursor-none">
             
-            {/* CROSSHAIR CURSOR */}
             <div ref={cursorRef} className="fixed top-0 left-0 w-8 h-8 border border-white/30 pointer-events-none z-[9999] -translate-x-1/2 -translate-y-1/2 flex items-center justify-center mix-blend-difference">
                 <div className="absolute top-[-4px] w-0.5 h-2 bg-white" />
                 <div className="absolute bottom-[-4px] w-0.5 h-2 bg-white" />
@@ -196,10 +292,8 @@ function GameDetail() {
             </div>
             <div ref={cursorDotRef} className="fixed top-0 left-0 w-1 h-1 bg-cyan-500 pointer-events-none z-[9999] -translate-x-1/2 -translate-y-1/2" />
 
-            {/* SCANLINES OVERLAY */}
             <div className="scanlines pointer-events-none fixed inset-0 z-[90] opacity-[0.05]" />
 
-            {/* HERO SECTION */}
             <header className="detail-hero relative h-[70vh] sm:h-[85vh] w-full flex items-end overflow-hidden border-b border-gray-900">
                 <div className="absolute inset-0 z-0">
                     <img src={item?.image} className="detail-hero-img w-full h-full object-cover grayscale opacity-40 scale-110" alt="" />
@@ -207,10 +301,7 @@ function GameDetail() {
                 </div>
 
                 <div className="relative z-10 max-w-7xl mx-auto px-6 pb-20 w-full">
-                    <motion.button 
-                        onClick={() => navigate(-1)}
-                        className="flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.4em] text-cyan-500 mb-10 hover:text-white transition-colors"
-                    >
+                    <motion.button onClick={() => navigate(-1)} className="flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.4em] text-cyan-500 mb-10 hover:text-white transition-colors">
                         <FiArrowLeft /> RETRACE_HUB
                     </motion.button>
 
@@ -230,196 +321,158 @@ function GameDetail() {
                         </div>
                         <div className="w-px h-8 bg-gray-800" />
                         <div>
-                            <span className="text-[8px] text-gray-500 uppercase tracking-widest block mb-1">Engine_Ver</span>
-                            <span className="text-sm font-black text-white uppercase">{item?.version || 'v1.0.0'}</span>
+                            <span className="text-[8px] text-gray-500 uppercase tracking-widest block mb-1">Rating</span>
+                            <span className="text-sm font-black text-cyan-500 flex items-center gap-2">
+                                {item?.avgRating || '—'} <span className="text-[10px] text-gray-600">/ 5.0</span>
+                            </span>
                         </div>
                     </div>
                 </div>
             </header>
 
-            {/* MAIN CONTENT GRID */}
+            {/* TAB NAVIGATION */}
+            <div className="max-w-7xl mx-auto px-6 border-b border-gray-900 flex space-x-12 overflow-x-auto selection:bg-transparent">
+                {tabs.map((tab) => (
+                    <button
+                        key={tab.id}
+                        onClick={() => setActiveTab(tab.id)}
+                        className={`py-6 text-[10px] font-black uppercase tracking-[0.3em] flex items-center gap-3 transition-all border-b-2 ${
+                            activeTab === tab.id ? 'text-cyan-500 border-cyan-500' : 'text-gray-600 border-transparent hover:text-gray-300'
+                        }`}
+                    >
+                        <tab.icon className={activeTab === tab.id ? 'animate-pulse' : ''} />
+                        {tab.label}
+                    </button>
+                ))}
+            </div>
+
             <div className="max-w-7xl mx-auto px-6 py-24 grid grid-cols-1 lg:grid-cols-12 gap-16">
                 
-                {/* LEFT: Intel & Specs */}
                 <div className="lg:col-span-8 space-y-24">
                     
-                    {/* VIDEO SECTION */}
-                    {item?.videoUrl && (
-                        <section className="gsap-reveal overflow-hidden border border-gray-900 bg-black relative aspect-video group">
-                            <iframe 
-                                className="w-full h-full opacity-80 group-hover:opacity-100 transition-opacity duration-700"
-                                src={item.videoUrl}
-                                title="YouTube video player" 
-                                frameBorder="0" 
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                                allowFullScreen
-                            />
-                            <div className="absolute top-4 left-4 flex items-center gap-2 bg-cyan-600 text-white px-3 py-1 text-[8px] font-black uppercase tracking-widest pointer-events-none shadow-[0_0_15px_rgba(220,38,38,0.5)]">
-                                <FiVideo /> Live_Feed
-                            </div>
-                        </section>
+                    {activeTab === 'intel' && (
+                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-24">
+                            {item?.videoUrl && (
+                                <section className="gsap-reveal overflow-hidden border border-gray-900 bg-black relative aspect-video group">
+                                    <iframe 
+                                        className="w-full h-full opacity-80 group-hover:opacity-100 transition-opacity duration-700"
+                                        src={item.videoUrl}
+                                        title="YouTube video player" frameBorder="0" allowFullScreen
+                                    />
+                                </section>
+                            )}
+                            <section className="gsap-reveal">
+                                <h2 className="text-2xl font-black uppercase tracking-widest text-white mb-8 flex items-center gap-4">
+                                    <span className="w-10 h-1 bg-cyan-600" /> Operational_Intel
+                                </h2>
+                                <p className="text-gray-400 text-[13px] leading-relaxed max-w-3xl border-l-[3px] border-gray-800 pl-8 uppercase tracking-wide font-medium">
+                                    {item?.description || "CLASSIFIED_INTEL_REMAINS_ENCRYPTED."}
+                                </p>
+                            </section>
+                            <section className="gsap-reveal bg-[#050505] border border-gray-900 p-8 shadow-2xl">
+                                <div className="flex justify-between items-center mb-8 gap-4 border-b border-gray-900 pb-4">
+                                    <h2 className="text-[10px] font-black uppercase tracking-[0.5em] text-cyan-500 flex items-center gap-3"><FiImage /> VISUAL_LOGS</h2>
+                                    <div className="flex gap-2">
+                                        {availableCategories.map(cat => (
+                                            <button key={cat} onClick={() => setActiveScreenshotCat(cat)} className={`px-3 py-1 text-[8px] font-black tracking-widest uppercase transition-all ${activeScreenshotCat === cat ? 'bg-cyan-600 text-white' : 'bg-black text-gray-500 border border-gray-800'}`}>{cat}</button>
+                                        ))}
+                                    </div>
+                                </div>
+                                <div className="screenshot-grid grid grid-cols-2 gap-4">
+                                    {visibleScreenshots.map((shot, i) => (
+                                        <div key={i} onClick={() => setLightbox(i)} className="relative aspect-video overflow-hidden border border-gray-800 grayscale hover:grayscale-0 transition-all cursor-crosshair group">
+                                            <img src={shot.url} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="" />
+                                            <div className="absolute top-3 left-3 bg-black/80 px-2 py-0.5 text-[7px] font-black text-gray-400 tracking-widest border border-gray-800">{shot.category}</div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </section>
+                        </motion.div>
                     )}
 
-                    {/* INTEL */}
-                    <section className="gsap-reveal">
-                        <h2 className="text-2xl font-black uppercase tracking-widest text-white mb-8 flex items-center gap-4">
-                            <span className="w-10 h-1 bg-cyan-600" /> Operational_Intel
-                        </h2>
-                        <p className="text-gray-400 text-lg leading-relaxed max-w-3xl border-l-[3px] border-gray-800 pl-8 uppercase text-[13px] tracking-wide font-medium">
-                            {item?.description || "No specific deployment data available for this chassis module. Telemetry remains classified until acquisition."}
-                        </p>
-                    </section>
-
-                    {/* CATEGORIZED SCREENSHOTS GALLERY */}
-                    <section className="gsap-reveal bg-[#050505] border border-gray-900 p-8 shadow-2xl">
-                        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4 border-b border-gray-900 pb-4">
-                            <h2 className="text-[10px] font-black uppercase tracking-[0.5em] text-cyan-500 flex items-center gap-3">
-                                <FiImage /> VISUAL_CAPTURE_LOGS
-                            </h2>
-                            <div className="flex flex-wrap gap-2">
-                                {availableCategories.map(cat => (
-                                    <button 
-                                        key={cat}
-                                        onClick={() => setActiveScreenshotCat(cat)}
-                                        className={`px-3 py-1 text-[8px] font-black tracking-widest uppercase transition-all ${activeScreenshotCat === cat ? 'bg-cyan-600 text-white border border-cyan-500 shadow-[0_0_10px_rgba(220,38,38,0.5)]' : 'bg-black text-gray-500 border border-gray-800 hover:text-white'}`}
-                                    >
-                                        {cat}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-
-                        <div className="screenshot-grid grid grid-cols-2 gap-4">
-                            <AnimatePresence mode="popLayout">
-                                {visibleScreenshots.map((shot, i) => (
-                                    <motion.div 
-                                        layout
-                                        initial={{ opacity: 0, scale: 0.9 }}
-                                        animate={{ opacity: 1, scale: 1 }}
-                                        exit={{ opacity: 0, scale: 0.9 }}
-                                        transition={{ duration: 0.3 }}
-                                        key={`${shot.url}-${i}`} 
-                                        onClick={() => setLightbox(i)}
-                                        className="screenshot-item relative aspect-video overflow-hidden border border-gray-800 grayscale hover:grayscale-0 transition-all duration-500 cursor-crosshair group"
-                                    >
-                                        <img src={shot.url} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="" />
-                                        <div className="absolute inset-0 bg-cyan-600/0 group-hover:bg-cyan-600/10 transition-colors" />
-                                        <div className="absolute top-3 left-3 bg-black/80 px-2 py-0.5 text-[7px] font-black text-gray-400 tracking-widest border border-gray-800 group-hover:border-cyan-500 transition-colors">
-                                            {shot.category}
-                                        </div>
-                                        <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <FiMaximize2 className="text-cyan-500 drop-shadow-md" />
-                                        </div>
-                                    </motion.div>
-                                ))}
-                            </AnimatePresence>
-                        </div>
-                    </section>
-
-                    {/* SPECS */}
-                    {(item?.minSpecs || item?.recommendedSpecs) && (
-                        <section className="gsap-reveal space-y-8">
-                            <h2 className="text-[10px] font-black uppercase tracking-[0.5em] text-cyan-500 flex items-center gap-3">
-                                <FiCpu /> SYSTEM_REQUIREMENTS
+                    {activeTab === 'specs' && (
+                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-12">
+                            <h2 className="text-2xl font-black uppercase tracking-widest text-white mb-8 flex items-center gap-4">
+                                <span className="w-10 h-1 bg-cyan-600" /> System_Thresholds
                             </h2>
                             <div className="grid md:grid-cols-2 gap-6">
-                                <SpecBlock title="MINIMUM_THRESHOLD" specs={item.minSpecs} variant="min" />
+                                <SpecBlock title="MINIMUM_REQ" specs={item.minSpecs} variant="min" />
                                 <SpecBlock title="OPTIMAL_SYNC" specs={item.recommendedSpecs} variant="rec" />
                             </div>
-                        </section>
+                        </motion.div>
+                    )}
+
+                    {activeTab === 'reviews' && (
+                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="grid md:grid-cols-12 gap-12">
+                            <div className="md:col-span-12 lg:col-span-7 space-y-6">
+                                <h2 className="text-2xl font-black uppercase tracking-widest text-white mb-8 flex items-center gap-4">
+                                    <span className="w-10 h-1 bg-cyan-600" /> Comm_Intercepts
+                                </h2>
+                                {reviews.length === 0 ? (
+                                    <div className="py-20 border border-dashed border-gray-800 text-center uppercase tracking-[0.3em] text-[10px] text-gray-600">Zero communications logged from the field.</div>
+                                ) : (
+                                    reviews.map((r, i) => (
+                                        <div key={i} className="bg-[#050505] border border-gray-900 p-6 border-l-4 border-l-cyan-600 shadow-xl">
+                                            <div className="flex justify-between items-start mb-4">
+                                                <div>
+                                                    <span className="text-cyan-500 text-[10px] font-black uppercase tracking-widest block mb-1">ID: {r.username}</span>
+                                                    <span className="text-[9px] text-gray-600 uppercase font-bold tracking-widest">{new Date(r.createdAt || Date.now()).toLocaleDateString()}</span>
+                                                </div>
+                                                <StarRating value={r.rating} />
+                                            </div>
+                                            <p className="text-gray-400 text-xs leading-relaxed uppercase tracking-wider">{r.comment || 'NO_MESSAGE_LOGGED'}</p>
+                                        </div>
+                                    ))
+                                )}
+                            </div>
+                            <div className="md:col-span-12 lg:col-span-5">
+                                <div className="bg-[#050505] border border-gray-900 p-8 sticky top-32 shadow-2xl">
+                                    <h3 className="text-xs font-black uppercase tracking-widest text-cyan-500 mb-6 flex items-center gap-2">TRANSMIT_LOG</h3>
+                                    <form onSubmit={handleReviewSubmit} className="space-y-6">
+                                        <div>
+                                            <label className="text-[9px] text-gray-500 uppercase tracking-widest block mb-2 font-black">Pilot_Identity</label>
+                                            <input type="text" value={reviewForm.username} onChange={e => setReviewForm(f => ({ ...f, username: e.target.value }))} className="w-full bg-black border border-gray-800 p-4 text-white text-xs outline-none focus:border-cyan-600 uppercase tracking-widest font-black" placeholder="ALIAS_01" />
+                                        </div>
+                                        <div>
+                                            <label className="text-[9px] text-gray-500 uppercase tracking-widest block mb-2 font-black">Sync_Rating</label>
+                                            <StarRating value={reviewForm.rating} onChange={r => setReviewForm(f => ({ ...f, rating: r }))} />
+                                        </div>
+                                        <div>
+                                            <label className="text-[9px] text-gray-500 uppercase tracking-widest block mb-2 font-black">Message_Encrypted</label>
+                                            <textarea value={reviewForm.comment} onChange={e => setReviewForm(f => ({ ...f, comment: e.target.value }))} className="w-full bg-black border border-gray-800 p-4 text-white text-xs outline-none focus:border-cyan-600 h-32 resize-none uppercase tracking-widest" placeholder="TYPE_MESSAGE..." />
+                                        </div>
+                                        <button className="w-full py-4 bg-cyan-600 text-black text-[10px] font-black uppercase tracking-widest hover:bg-white transition-all disabled:opacity-50" disabled={reviewStatus === 'loading'}>
+                                            {reviewStatus === 'loading' ? 'Transmitting...' : 'Initiate Transmission'}
+                                        </button>
+                                        {reviewMsg && <p className={`text-[9px] text-center uppercase tracking-widest font-black ${reviewStatus === 'success' ? 'text-green-500' : 'text-red-500'}`}>{reviewMsg}</p>}
+                                    </form>
+                                </div>
+                            </div>
+                        </motion.div>
                     )}
                 </div>
 
-                {/* RIGHT: SIDEBAR BOX */}
                 <aside className="lg:col-span-4 space-y-8">
-                    <div className="gsap-reveal sticky top-32 p-8 bg-[#050505] border border-gray-900 shadow-2xl relative overflow-hidden">
-                        <div className="absolute top-0 right-0 p-4 opacity-10">
-                            <FiCrosshair size={100} />
-                        </div>
-                        <h3 className="text-xs font-black uppercase tracking-widest text-cyan-500 mb-6 flex items-center gap-2">
-                            <span className="w-2 h-2 bg-cyan-600 animate-ping" /> MODULE_ACQUISITION
-                        </h3>
-                        
+                    <div className="p-8 bg-[#050505] border border-gray-900 shadow-2xl relative sticky top-32">
+                        <div className="absolute top-0 right-0 p-4 opacity-10"><FiCrosshair size={100} /></div>
+                        <h3 className="text-xs font-black uppercase tracking-widest text-cyan-500 mb-6 flex items-center gap-2">MODULE_STATUS</h3>
                         <div className="space-y-4 mb-10 relative z-10">
-                            <div className="p-4 bg-black border border-gray-800 flex justify-between items-center group hover:border-cyan-900/50 transition-colors">
-                                <span className="text-[8px] text-gray-500 uppercase tracking-widest font-black">PAYLOAD_SIZE</span>
-                                <span className="text-sm font-black text-gray-200 uppercase">{item?.downloadSize || '12.4 GB'}</span>
-                            </div>
-                            <div className="p-4 bg-black border border-gray-800 flex justify-between items-center group hover:border-cyan-900/50 transition-colors">
-                                <span className="text-[8px] text-gray-500 uppercase tracking-widest font-black">NETWORK</span>
-                                <span className="text-xs font-black text-gray-200 uppercase tracking-widest">SECURED_P2P</span>
-                            </div>
+                            <div className="p-4 bg-black border border-gray-800 flex justify-between items-center"><span className="text-[8px] text-gray-500 uppercase tracking-widest font-black">Payload</span><span className="text-sm font-black text-gray-200">{item?.downloadSize || '12.4 GB'}</span></div>
+                            <div className="p-4 bg-black border border-gray-800 flex justify-between items-center"><span className="text-[8px] text-gray-500 uppercase tracking-widest font-black">Acquisitions</span><span className="text-sm font-black text-white">{item?.downloads || '0'}</span></div>
+                            <div className="p-4 bg-black border border-gray-800 flex justify-between items-center"><span className="text-[8px] text-gray-500 uppercase tracking-widest font-black">Encryption</span><span className="text-[8px] font-black text-cyan-500 tracking-[0.2em]">APEX_SECURED</span></div>
                         </div>
-
-                        <button 
-                            onClick={handlePrimaryCta}
-                            className="w-full py-5 bg-cyan-600 text-white font-black uppercase tracking-[0.3em] text-[10px] border border-cyan-500 hover:bg-white hover:text-black transition-all group flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(0,242,255,0.4)] relative z-10 hover:shadow-[0_0_30px_rgba(255,255,255,0.6)]"
-                        >
+                        <button onClick={handlePrimaryCta} className="w-full py-5 bg-cyan-600 text-white font-black uppercase tracking-[0.3em] text-[10px] border border-cyan-500 hover:bg-white hover:text-black transition-all group flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(0,242,255,0.4)] relative z-10">
                             {category === 'showroom' ? <FiShoppingCart /> : <FiDownload />}
                             {meta.cta}
                         </button>
-
-                        <p className="mt-8 text-[8px] text-gray-600 uppercase tracking-widest text-center leading-loose font-bold">
-                            By initializing deployment, you agree to the <br/>
-                            <span className="text-cyan-900 underline decoration-cyan-900 underline-offset-4 line-through">APEX_CORE_EULA</span> and telemetry tracking.
-                        </p>
                     </div>
                 </aside>
             </div>
 
-            {/* LIGHTBOX MODAL */}
-            <AnimatePresence>
-                {lightbox !== null && (
-                    <motion.div 
-                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                        className="fixed inset-0 z-[200] bg-[#020202]/98 flex flex-col items-center justify-center p-10 backdrop-blur-sm"
-                    >
-                        <button 
-                            onClick={() => setLightbox(null)}
-                            className="absolute top-10 right-10 text-gray-500 hover:text-cyan-500 transition-colors p-4 z-50 cursor-crosshair"
-                        >
-                            <FiX size={40} />
-                        </button>
-                        
-                        <motion.img 
-                            initial={{ scale: 0.9, opacity: 0 }}
-                            animate={{ scale: 1, opacity: 1 }}
-                            src={visibleScreenshots[lightbox]?.url} 
-                            className="max-w-full max-h-[75vh] object-contain border border-gray-800 shadow-[0_0_50px_rgba(220,38,38,0.1)]" 
-                            alt="" 
-                        />
-
-                        <div className="mt-12 flex items-center gap-10">
-                            <button 
-                                disabled={lightbox === 0}
-                                onClick={() => setLightbox(prev => prev - 1)}
-                                className="text-[10px] font-black uppercase tracking-widest text-gray-500 hover:text-cyan-500 disabled:opacity-0 transition-all cursor-crosshair"
-                            >
-                                PREV_LOG
-                            </button>
-                            <div className="h-px w-20 bg-gray-800" />
-                            <span className="text-xs font-black tracking-widest text-cyan-500">CAPTURE_{lightbox + 1} // {visibleScreenshots.length}</span>
-                            <div className="h-px w-20 bg-gray-800" />
-                            <button 
-                                disabled={lightbox === visibleScreenshots.length - 1}
-                                onClick={() => setLightbox(prev => prev + 1)}
-                                className="text-[10px] font-black uppercase tracking-widest text-gray-500 hover:text-cyan-500 disabled:opacity-0 transition-all cursor-crosshair"
-                            >
-                                NEXT_LOG
-                            </button>
-                        </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
-
-            <style dangerouslySetInnerHTML={{
-                __html: `
-                .scanlines {
-                    background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.2));
-                    background-size: 100% 4px;
-                }
+            <style dangerouslySetInnerHTML={{ __html: `
+                .scanlines { background: linear-gradient(to bottom, transparent, transparent 50%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.1)); background-size: 100% 4px; }
                 body { cursor: none !important; }
-                a, button, [role="button"], input, select { cursor: none !important; }
+                a, button, input, textarea { cursor: none !important; }
             `}} />
         </div>
     );

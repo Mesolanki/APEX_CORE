@@ -48,7 +48,12 @@ function Admin() {
                 <FiDatabase className="text-red-600 text-3xl" />
                 <div>
                     <h1 className="text-2xl sm:text-3xl font-black italic tracking-tighter uppercase text-white">Mainframe_Admin</h1>
-                    <p className="text-[10px] text-red-500 font-bold tracking-widest uppercase">Level 4 Clearance Required</p>
+                    <div className="flex items-center gap-4 mt-2">
+                        <p className="text-[10px] text-red-500 font-bold tracking-widest uppercase">Level 4 Clearance Required</p>
+                        <Link to="/admin/dashboard" className="text-[10px] bg-gray-900 hover:bg-gray-800 px-3 py-1 border border-gray-800 text-blue-500 font-black uppercase tracking-widest transition-all">
+                            Manage_All_Assets
+                        </Link>
+                    </div>
                 </div>
             </header>
 

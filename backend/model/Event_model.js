@@ -14,6 +14,8 @@ const reviewSchema = new mongoose.Schema({
 }, { _id: true });
 
 const eventSchema = new mongoose.Schema({
+    // Auto-generated display ID
+    eventId:      { type: String, default: '' },
     // Basic Info
     target:       { type: String, required: true },  // Event title/codename
     description:  String,

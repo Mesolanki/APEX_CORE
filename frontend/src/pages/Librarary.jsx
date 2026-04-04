@@ -310,11 +310,9 @@ function Library() {
                                                         
                                                         <div className="flex justify-between items-end pt-4 mt-4 border-t border-gray-900">
                                                             <div>
-                                                                {item.releaseDate && (
-                                                                    <span className="block text-[8px] text-gray-600 font-black tracking-[0.2em] uppercase mb-1">
-                                                                        REV: {item.releaseDate}
-                                                                    </span>
-                                                                )}
+                                                                <span className="block text-[8px] text-gray-500 uppercase tracking-[0.2em] mb-1">
+                                                                    ACQUISITIONS: {item.downloads || 0}
+                                                                </span>
                                                                 <span className="text-[9px] font-black text-cyan-500 tracking-widest uppercase flex items-center gap-2 group-hover:translate-x-1 transition-transform">
                                                                      INITIATE_MODULE
                                                                 </span>
@@ -353,7 +351,7 @@ function Library() {
                                                         <div className="truncate pr-4 flex-1 flex flex-col justify-center">
                                                             <div className="flex items-center gap-3 mb-3">
                                                                 <span className="text-[10px] text-gray-400 font-black tracking-[0.2em] uppercase border border-gray-800 px-2 py-0.5">{item.id}</span>
-                                                                {item.releaseDate && <span className="text-[10px] text-cyan-500 font-black tracking-[0.2em] uppercase px-2 py-0.5 bg-cyan-900/10 border border-cyan-900/30">REV: {item.releaseDate}</span>}
+                                                                <span className="text-[10px] text-cyan-500 font-black tracking-[0.2em] uppercase px-2 py-0.5 bg-cyan-900/10 border border-cyan-900/30">MODULE_SYNC: {item.downloads || 0}</span>
                                                             </div>
                                                             <h3 className="text-xl md:text-2xl font-black italic text-white group-hover:text-cyan-400 transition-colors truncate mb-2 uppercase">{item.title}</h3>
                                                             {item.description && <p className="text-[10px] text-gray-600 truncate uppercase tracking-widest">{item.description}</p>}
