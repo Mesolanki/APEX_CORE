@@ -1,10 +1,6 @@
-console.log(`\n>>> [BOOT]: ENGINE_INITIALIZING... (Time: ${new Date().toISOString()})`);
-require("dotenv").config();
-const express = require("express");
-
-// 🛠️ GLOBAL ERROR CATCHING (for Render Debugging)
+// 🛠️ ABSOLUTE TOP-LEVEL ERROR CAPTURE (For Render Debugging)
 process.on('uncaughtException', (err) => {
-    console.error(`\n>>> [FATAL_EXCEPTION]: ${err.message}`);
+    console.error(`\n>>> [FATAL_LOAD_EXCEPTION]: ${err.message}`);
     console.error(err.stack);
     process.exit(1);
 });
@@ -13,6 +9,9 @@ process.on('unhandledRejection', (reason, promise) => {
     console.error('\n>>> [UNHANDLED_REJECTION]:', reason);
 });
 
+console.log(`\n>>> [BOOT]: ENGINE_INITIALIZING... (Time: ${new Date().toISOString()})`);
+require("dotenv").config();
+const express = require("express");
 const app = express();
 
 const { connectDB } = require("./config/db.js");
@@ -36,6 +35,7 @@ if (missingEnvVars.length) {
 
 // 🛡️ Explicitly connect to database
 connectDB();
+
 
 
 
