@@ -7,10 +7,10 @@ require("dotenv").config(); // 🛠️ Load env variables
 const clientID = process.env.GOOGLE_CLIENT_ID;
 const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
 
-// 🛠️ ROBUST URL NORMALIZATION
-const rawBackendUrl = process.env.BACKEND_URL || "http://localhost:8050";
-const cleanBackendUrl = rawBackendUrl.replace(/\/+$/, "");
-const callbackURL = `${cleanBackendUrl}/user/auth/google/callback`;
+// 🛠️ AUTOMATIC CALLBACK URL DISCOVERY
+const rawUrl = process.env.BACKEND_URL || process.env.RENDER_EXTERNAL_URL || "http://localhost:8050";
+const cleanUrl = rawUrl.replace(/\/+$/, "");
+const callbackURL = `${cleanUrl}/user/auth/google/callback`;
 
 if (clientID && clientSecret) {
     console.log(`>>> [System]: Google OAuth Callback URI is: ${callbackURL}`);
@@ -20,6 +20,7 @@ if (clientID && clientSecret) {
         clientSecret: clientSecret,
         callbackURL: callbackURL
     },
+
 
         async (accessToken, refreshToken, profile, done) => {
             try {
