@@ -28,7 +28,8 @@ U_route.get("/auth/google",
 U_route.get("/auth/google/callback",
     passport.authenticate("google", {
         session: false,
-        failureRedirect: "http://localhost:5173/login?error=account_not_found"
+        failureRedirect: `${process.env.FRONTEND_URL || "http://localhost:5173"}/login?error=account_not_found`
+
     }),
     googleAuthCallBack
 );

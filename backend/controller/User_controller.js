@@ -4,17 +4,30 @@ const crypto = require('crypto');
 const bcrypt = require("bcryptjs");
 const nodemailer = require("nodemailer");
 const path = require("path");
-require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
+
 
 const normalizeEmail = (email = "") => email.trim().toLowerCase();
 
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
+// 🛠️ DEFENSIVE MAILER INITIALIZATION
+let transporter = {
+    sendMail: async () => {
+        console.error(">>> [System_Failure]: Attempted to send email but EMAIL_USER/PASS are missing.");
+        throw new Error("MAILER_OFFLINE");
     }
-});
+};
+
+if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+    transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASS
+        }
+    });
+} else {
+    console.warn(">>> [Warning]: Email credentials (EMAIL_USER, EMAIL_PASS) missing. Messaging_Strategy effectively offline.");
+}
+
 
 // Helper to ensure token generation doesn't crash if SECRET_KEY is missing
 const generateToken = (userId, email) => {
@@ -174,7 +187,8 @@ const verifyEmail = async (req, res) => {
         user.verificationToken = undefined;
         await user.save();
 
-        res.redirect('http://localhost:5173/login?verified=true');
+        res.redirect(`${process.env.FRONTEND_URL || "http://localhost:5173"}/login?verified=true`);
+
     } catch (error) {
         res.status(500).send("Verification_System_Failure");
     }
@@ -185,10 +199,10 @@ const googleAuthCallBack = async (req, res) => {
         const user = req.user;
         const token = generateToken(user._id, user.email);
 
-        res.redirect(`http://localhost:5173/google-callback?token=${token}`);
+        res.redirect(`${process.env.FRONTEND_URL || "http://localhost:5173"}/google-callback?token=${token}`);
     } catch (error) {
         console.error("Google_Auth_Callback_Error:", error);
-        res.redirect(`http://localhost:5173/login?error=auth_failed`);
+        res.redirect(`${process.env.FRONTEND_URL || "http://localhost:5173"}/login?error=auth_failed`);
     }
 };
 
@@ -271,7 +285,8 @@ const forgotPassword = async (req, res) => {
 
         console.log(`>>> [System]: Reset Token for ${normalizedEmail}: ${resetToken}`);
 
-        const resetLink = `http://localhost:5173/reset-password?token=${resetToken}`;
+        const resetLink = `${process.env.FRONTEND_URL || "http://localhost:5173"}/reset-password?token=${resetToken}`;
+
         const mailOptions = {
             from: process.env.EMAIL_USER,
             to: normalizedEmail,

@@ -1,12 +1,20 @@
 const mongoose = require("mongoose");
-const path = require("path");
-require("dotenv").config({ path: path.resolve(__dirname, "../.env") }); // Ensure correct env file
 
 // 🛠️ USE URI FROM .ENV
 const uri = process.env.MONGO_URI;
 
+
+// 🛠️ EXPLICIT DB INITIALIZATION
 const connectDB = async () => {
     try {
+        if (!uri) {
+            throw new Error("MONGO_URI_UNDEFINED");
+        }
+        
+        // Log masked URI for verification
+        const maskedUri = uri.replace(/\/\/.*@/, "//****:****@").split("?")[0];
+        console.log(`>>> [System]: Attempting connection to ${maskedUri}...`);
+
         await mongoose.connect(uri);
         console.log(">>> [System]: Connection to Database Established");
     } catch (error) {
@@ -14,6 +22,5 @@ const connectDB = async () => {
         process.exit(1); 
     }
 };
-connectDB();
 
-module.exports = mongoose.connection;
+module.exports = { connectDB, connection: mongoose.connection };

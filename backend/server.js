@@ -1,8 +1,21 @@
-const path = require("path");
-require("dotenv").config({ path: path.resolve(__dirname, ".env") }); // Always load backend/.env
+console.log(`\n>>> [BOOT]: ENGINE_INITIALIZING... (Time: ${new Date().toISOString()})`);
+require("dotenv").config();
 const express = require("express");
+
+// 🛠️ GLOBAL ERROR CATCHING (for Render Debugging)
+process.on('uncaughtException', (err) => {
+    console.error(`\n>>> [FATAL_EXCEPTION]: ${err.message}`);
+    console.error(err.stack);
+    process.exit(1);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('\n>>> [UNHANDLED_REJECTION]:', reason);
+});
+
 const app = express();
-const db = require("./config/db.js");
+
+const { connectDB } = require("./config/db.js");
 const U_route = require("./routes/User_route.js");
 const gameRoute = require("./routes/Game_route.js");
 const cors = require("cors");
@@ -16,9 +29,15 @@ require("./config/passport.js");
 const requiredEnvVars = ["MONGO_URI", "JWT_SECRET"];
 const missingEnvVars = requiredEnvVars.filter((key) => !process.env[key]);
 if (missingEnvVars.length) {
-    console.error(`>>> [Critical_Error]: Missing env vars: ${missingEnvVars.join(", ")}`);
+    console.error(`\n>>> [CRITICAL ERROR]: The following environment variables ARE MISSING: ${missingEnvVars.join(", ")}`);
+    console.error(`>>> [System]: Infrastructure cannot initialize. Have you added these to Render?`);
     process.exit(1);
 }
+
+// 🛡️ Explicitly connect to database
+connectDB();
+
+
 
 const allowedOrigins = [
     "http://localhost:5173",
