@@ -7,13 +7,20 @@ require("dotenv").config(); // 🛠️ Load env variables
 const clientID = process.env.GOOGLE_CLIENT_ID;
 const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
 
+// 🛠️ ROBUST URL NORMALIZATION
+const rawBackendUrl = process.env.BACKEND_URL || "http://localhost:8050";
+const cleanBackendUrl = rawBackendUrl.replace(/\/+$/, "");
+const callbackURL = `${cleanBackendUrl}/user/auth/google/callback`;
+
 if (clientID && clientSecret) {
+    console.log(`>>> [System]: Google OAuth Callback URI is: ${callbackURL}`);
+    
     passport.use(new GoogleStrategy({
-        // 🛠️ USE GOOGLE SECRETS FROM .ENV
         clientID: clientID,
         clientSecret: clientSecret,
-        callbackURL: `${process.env.BACKEND_URL || "http://localhost:8050"}/user/auth/google/callback`
+        callbackURL: callbackURL
     },
+
         async (accessToken, refreshToken, profile, done) => {
             try {
                 const userEmail = profile.emails[0].value;
