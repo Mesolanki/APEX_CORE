@@ -39,21 +39,14 @@ connectDB();
 
 
 
-const allowedOrigins = [
-    "http://localhost:5173",
-    "http://localhost:5174",
-    "http://localhost:5175",
-    "http://localhost:5176",
-    process.env.FRONTEND_URL,
-    process.env.ADMIN_URL
-].filter(Boolean);
+const path = require("path");
 
 app.use(cors({
     origin: allowedOrigins,
     credentials: true
 }));
 
-app.use('/uploads', express.static('uploads'));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -66,8 +59,21 @@ app.use('/api/events', eventRoute);
 app.use('/api/drivers', driverRoute);
 app.use("/user", U_route);
 
-app.get("/backend", (req, res) => res.send("Terminal_Online"));
+app.get("/backend", (req, res) => {
+    console.log(`>>> [Ping]: Health connection received at ${new Date().toISOString()}`);
+    res.send("Terminal_Online");
+});
 
-// 🛠️ USE PORT FROM .ENV
+// 🛠️ USE SYSTEM PORT (CRITICAL FOR RENDER PROXY)
 const PORT = process.env.PORT || 8050;
-app.listen(PORT, () => console.log(`>>> [System]: Server Online on Port ${PORT}`));
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`\n*****************************************`);
+    console.log(`>>> [System]: Server Online on Port ${PORT}`);
+    console.log(`>>> [System]: Listening on 0.0.0.0 (Public)`);
+    console.log(`*****************************************\n`);
+});
+
+// 💓 Heartbeat to prevent log silence
+setInterval(() => {
+    console.log(`>>> [Heartbeat]: API is healthy at ${new Date().toISOString()}`);
+}, 60000);
