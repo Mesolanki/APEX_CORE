@@ -10,6 +10,15 @@
   --neon-cyan-glow: rgba(0, 242, 255, 0.4);
 }
 
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+}
+
 body {
   margin: 0;
   padding-top: 80px;
@@ -17,6 +26,8 @@ body {
   color: #efefef;
   font-family: 'Inter', sans-serif;
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* CRT EFFECTS - SUBTLE & PREMIUM */

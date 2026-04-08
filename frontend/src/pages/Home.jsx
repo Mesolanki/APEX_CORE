@@ -291,7 +291,7 @@ function Home() {
                     <motion.h1 
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="reveal-text text-5xl md:text-8xl lg:text-[10rem] font-black italic tracking-tighter uppercase mb-4 leading-none text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-600 drop-shadow-[0_10px_30px_rgba(0,0,0,0.8)]"
+                        className="reveal-text text-5xl sm:text-7xl md:text-8xl lg:text-[10rem] font-black italic tracking-tighter uppercase mb-4 leading-none text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-600 drop-shadow-[0_10px_30px_rgba(0,0,0,0.8)]"
                     >
                         CYBER<span className="text-cyan-500">_PUNK</span>
                     </motion.h1>
@@ -342,7 +342,7 @@ function Home() {
                 <div className="absolute top-10 left-6 md:left-10 z-50">
                     <div className="flex items-center gap-3 mb-1">
                         <div className="w-2 h-2 bg-cyan-500 animate-pulse" />
-                        <h2 className="text-3xl md:text-5xl font-black italic text-white uppercase tracking-tighter">Specs_<span className="text-cyan-500">Matrix</span></h2>
+                        <h2 className="text-2xl sm:text-3xl md:text-5xl font-black italic text-white uppercase tracking-tighter">Specs_<span className="text-cyan-500">Matrix</span></h2>
                     </div>
                     <p className="text-[10px] text-gray-500 tracking-[0.4em] uppercase font-bold pl-5">Technical Breakdown // V5.0.0</p>
                 </div>
@@ -448,7 +448,7 @@ function Home() {
             {/* GSAP HORIZONTAL SCROLL SHOWROOM */}
             <section ref={horizontalSectionRef} className="bg-[#020202] relative overflow-hidden h-screen flex flex-col justify-center border-b border-gray-900">
                 <div className="absolute top-12 left-6 right-6 z-20 flex flex-col md:flex-row justify-between items-start md:items-end gap-6 pb-6 border-b border-gray-800 bg-[#020202]/80 backdrop-blur-sm">
-                    <h2 className="text-3xl md:text-4xl font-black uppercase tracking-widest text-white flex items-center gap-4 reveal-text">
+                    <h2 className="text-2xl sm:text-3xl md:text-4xl font-black uppercase tracking-widest text-white flex items-center gap-4 reveal-text">
                         <FiLayers className="text-cyan-500" /> Chassis_Deck
                     </h2>
                     <div className="flex flex-wrap gap-4 md:gap-6 text-[10px] font-bold text-gray-600 uppercase tracking-[0.2em]">
@@ -576,7 +576,7 @@ function Home() {
                         <p className="text-[10px] font-bold tracking-widest uppercase text-gray-600 reveal-text">Live Network Diagnostics</p>
                     </div>
 
-                    <div className="lg:col-span-3 grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="lg:col-span-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                         {(gameData?.systemTelemetry || [
                             { label: "Active Nodes", value: "1,204" },
                             { label: "Match Latency", value: "24ms" },

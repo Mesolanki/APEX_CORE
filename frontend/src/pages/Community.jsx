@@ -239,37 +239,39 @@ function Community() {
     return (
         <div className="min-h-screen bg-[#020202] text-gray-200 font-mono p-6 pt-24 pb-32 cursor-none relative overflow-x-hidden">
             
-            {/* GSAP CURSOR */}
-            <div ref={cursorRef} className="fixed top-0 left-0 w-8 h-8 pointer-events-none z-[9999] flex items-center justify-center mix-blend-difference">
-                <div className="absolute top-[-4px] w-0.5 h-2 bg-white" />
-                <div className="absolute bottom-[-4px] w-0.5 h-2 bg-white" />
-                <div className="absolute left-[-4px] w-2 h-0.5 bg-white" />
-                <div className="absolute right-[-4px] w-2 h-0.5 bg-white" />
+            {/* GSAP CURSOR (Only shown on non-touch devices) */}
+            <div className="hidden lg:block">
+                <div ref={cursorRef} className="fixed top-0 left-0 w-8 h-8 pointer-events-none z-[9999] flex items-center justify-center mix-blend-difference">
+                    <div className="absolute top-[-4px] w-0.5 h-2 bg-white" />
+                    <div className="absolute bottom-[-4px] w-0.5 h-2 bg-white" />
+                    <div className="absolute left-[-4px] w-2 h-0.5 bg-white" />
+                    <div className="absolute right-[-4px] w-2 h-0.5 bg-white" />
+                </div>
+                <div ref={cursorDotRef} className="fixed top-0 left-0 w-1.5 h-1.5 bg-cyan-600 pointer-events-none z-[9999] mix-blend-difference rounded-full" />
             </div>
-            <div ref={cursorDotRef} className="fixed top-0 left-0 w-1.5 h-1.5 bg-cyan-600 pointer-events-none z-[9999] mix-blend-difference rounded-full" />
 
             <div className="scanlines pointer-events-none fixed inset-0 z-50 opacity-10" />
 
             <header className="max-w-4xl mx-auto mb-10 border-b-2 border-cyan-900 pb-8 relative z-10">
-                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-6 mb-8">
+                <div className="flex flex-col md:flex-row md:justify-between md:items-end gap-6 mb-8">
                     <div>
                         <div className="flex items-center gap-2 text-cyan-500 mb-2">
                             <FiCrosshair className="animate-spin-slow" />
                             <span className="text-[10px] font-bold tracking-[0.4em] uppercase">Global_Comm_Network</span>
                         </div>
-                        <h1 className="text-4xl md:text-5xl font-black italic uppercase text-white tracking-tighter">Pilot_Syndicate</h1>
+                        <h1 className="text-3xl sm:text-4xl md:text-5xl font-black italic uppercase text-white tracking-tighter">Pilot_Syndicate</h1>
                     </div>
                     {currentUser ? (
                         <button
                             type="button"
                             onClick={() => setIsFormOpen(true)}
-                            className="interactive bg-cyan-600 hover:bg-white text-white hover:text-black px-6 py-4 border border-cyan-500 hover:border-white text-xs font-black uppercase tracking-[0.2em] flex items-center gap-3 transition-all shrink-0"
+                            className="interactive bg-cyan-600 hover:bg-white text-white hover:text-black px-6 py-4 border border-cyan-500 hover:border-white text-xs font-black uppercase tracking-[0.2em] flex items-center gap-3 transition-all shrink-0 w-full sm:w-auto justify-center"
                         >
                             <FiPlus className="text-lg" /> INIT_BROADCAST
                         </button>
                     ) : (
-                        <div className="text-[10px] text-cyan-500 border border-cyan-900 bg-cyan-950/30 px-6 py-3 uppercase tracking-widest font-black flex items-center gap-2">
-                            <FiLock /> AUTH_REQUIRED_TO_BROADCAST
+                        <div className="text-[9px] text-cyan-500 border border-cyan-900 bg-cyan-950/30 px-6 py-3 uppercase tracking-widest font-black flex items-center gap-2 w-full sm:w-auto justify-center">
+                            <FiLock /> AUTH_LOCKED
                         </div>
                     )}
                 </div>
@@ -513,8 +515,10 @@ function Community() {
                     background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.2));
                     background-size: 100% 4px;
                 }
-                body { cursor: none !important; }
-                a, button, select, input, textarea { cursor: none !important; }
+                @media (min-width: 1024px) {
+                    body { cursor: none !important; }
+                    a, button, select, input, textarea { cursor: none !important; }
+                }
 
                 @keyframes fadeIn {
                     from { opacity: 0; transform: scale(0.98); }
@@ -522,7 +526,7 @@ function Community() {
                 }
                 .custom-scrollbar::-webkit-scrollbar { width: 2px; }
                 .custom-scrollbar::-webkit-scrollbar-track { background: #000; }
-                .custom-scrollbar::-webkit-scrollbar-thumb { background: #dc2626; }
+                .custom-scrollbar::-webkit-scrollbar-thumb { background: #00f2ff; }
             `}} />
         </div>
     );

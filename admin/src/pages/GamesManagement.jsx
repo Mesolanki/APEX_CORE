@@ -84,9 +84,9 @@ const GamesManagement = () => {
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 font-mono text-gray-200 uppercase selection:bg-red-600 selection:text-white">
             
             <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-l-4 border-red-600 pl-6 relative">
-                <div className="absolute top-1/2 -translate-y-1/2 -left-10 w-8 h-px bg-red-600/30" />
+                <div className="hidden sm:block absolute top-1/2 -translate-y-1/2 -left-10 w-8 h-px bg-red-600/30" />
                 <div>
-                    <h1 className="text-4xl md:text-5xl font-black italic tracking-tighter text-white mb-2">CHASSIS_VAULT</h1>
+                    <h1 className="text-3xl sm:text-4xl md:text-5xl font-black italic tracking-tighter text-white mb-2">CHASSIS_VAULT</h1>
                     <p className="text-[10px] text-gray-500 tracking-[0.3em] bg-black border border-gray-900 px-3 py-1 inline-flex items-center gap-2">
                         <Terminal size={12} className="text-red-500" /> Administrative Access Granted
                     </p>
@@ -145,9 +145,9 @@ const GamesManagement = () => {
                         <div className="space-y-4">
                             <h4 className="text-[10px] text-red-500 font-bold tracking-[0.4em] mb-4">DEPLOYMENT_REQUIREMENTS</h4>
                             
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-10">
                                 {/* MIN SPECS */}
-                                <div className="space-y-3 bg-black p-6 border border-gray-900 shadow-inner">
+                                <div className="space-y-3 bg-black p-4 sm:p-6 border border-gray-900 shadow-inner">
                                     <h5 className="text-[10px] text-gray-500 font-black tracking-widest border-b border-gray-800 pb-2 mb-4">MINIMUM_THRESHOLD</h5>
                                     {['os', 'cpu', 'ram', 'gpu', 'storage'].map(field => (
                                         <input key={field} type="text" placeholder={`MIN_${field.toUpperCase()}`} value={formData.minSpecs[field]} onChange={e => handleSpecChange('minSpecs', field, e.target.value)} className="w-full bg-[#020202] border border-gray-800 py-3 px-4 text-xs font-bold tracking-wider focus:outline-none focus:border-red-900 transition-colors" />
@@ -155,7 +155,7 @@ const GamesManagement = () => {
                                 </div>
                                 
                                 {/* REC SPECS */}
-                                <div className="space-y-3 bg-black p-6 border border-gray-900 shadow-inner">
+                                <div className="space-y-3 bg-black p-4 sm:p-6 border border-gray-900 shadow-inner">
                                     <h5 className="text-[10px] text-gray-500 font-black tracking-widest border-b border-gray-800 pb-2 mb-4">OPTIMAL_SYNC</h5>
                                     {['os', 'cpu', 'ram', 'gpu', 'storage'].map(field => (
                                         <input key={field} type="text" placeholder={`REC_${field.toUpperCase()}`} value={formData.recommendedSpecs[field]} onChange={e => handleSpecChange('recommendedSpecs', field, e.target.value)} className="w-full bg-[#020202] border border-gray-800 py-3 px-4 text-xs font-bold tracking-wider focus:outline-none focus:border-blue-900 transition-colors" />
