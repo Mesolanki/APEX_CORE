@@ -282,7 +282,7 @@ function Home() {
                     <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/80 to-[#020202]" />
                 </div>
 
-                <div className="relative z-10 max-w-7xl w-full px-6 flex flex-col items-center text-center">
+                <div className="relative z-10 ultra-wide-container px-6 flex flex-col items-center text-center">
                     <motion.div initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="inline-flex items-center gap-3 mb-6 bg-cyan-600/10 border border-cyan-500/30 px-4 py-1.5 backdrop-blur-md">
                         <div className="w-2 h-2 bg-cyan-500 rounded-none animate-ping" />
                         <span className="text-cyan-500 text-[10px] font-bold tracking-[0.4em] uppercase">APEX_CORE_V5</span>
@@ -413,7 +413,7 @@ function Home() {
                 <div className="absolute right-[-10%] top-[10%] text-[20vw] font-black italic text-gray-900/10 whitespace-nowrap pointer-events-none select-none">
                     ONBOARDING
                 </div>
-                <div className="max-w-7xl mx-auto px-6 relative z-10">
+                <div className="ultra-wide-container px-6 relative z-10">
                     <div className="text-center mb-16 md:mb-20 reveal-text">
                         <h2 className="text-3xl md:text-5xl font-black uppercase tracking-widest text-white mb-4">
                             Deployment Protocol
@@ -505,7 +505,7 @@ function Home() {
 
             {/* DUAL SECTION: EVENTS & DRIVERS */}
             <section className="py-24 md:py-32 bg-black border-b border-gray-900">
-                <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-16">
+                <div className="ultra-wide-container px-6 grid grid-cols-1 lg:grid-cols-2 gap-16">
                     <div>
                         <div className="flex items-end justify-between mb-8 pb-4 border-b border-gray-800 reveal-text">
                             <h2 className="text-2xl font-black uppercase tracking-widest text-white flex items-center gap-3">
@@ -570,7 +570,7 @@ function Home() {
 
             {/* GSAP TELEMETRY CARDS */}
             <section className="telemetry-section py-20 bg-[#020202] border-b border-gray-900 relative">
-                <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-4 gap-8 md:gap-12 relative z-10">
+                <div className="ultra-wide-container px-6 grid grid-cols-1 lg:grid-cols-4 gap-8 md:gap-12 relative z-10">
                     <div className="lg:col-span-1 flex flex-col justify-center">
                         <h3 className="text-2xl font-black uppercase tracking-tighter mb-2 text-white reveal-text">Sys_Telemetry</h3>
                         <p className="text-[10px] font-bold tracking-widest uppercase text-gray-600 reveal-text">Live Network Diagnostics</p>
