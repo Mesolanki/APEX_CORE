@@ -8,7 +8,7 @@ const clientID = process.env.GOOGLE_CLIENT_ID;
 const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
 
 // 🛠️ AUTOMATIC CALLBACK URL DISCOVERY
-const rawUrl = process.env.BACKEND_URL || process.env.RENDER_EXTERNAL_URL || "https://apex-core-backend.onrender.com";
+const rawUrl = process.env.BACKEND_URL || process.env.RENDER_EXTERNAL_URL || "https://apex-core-backend-lyoj.onrender.com";
 const cleanUrl = rawUrl.replace(/\/+$/, "");
 const callbackURL = `${cleanUrl}/user/auth/google/callback`;
 
