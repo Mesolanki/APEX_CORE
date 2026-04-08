@@ -27,20 +27,22 @@ services:
       - key: GOOGLE_CLIENT_SECRET
         sync: false
 
-  - type: static_site
+  - type: web
     name: apex-core-frontend
+    runtime: static
     rootDir: frontend
     buildCommand: npm install && npm run build
-    publishDir: dist
+    staticPublishPath: dist
     envVars:
       - key: VITE_API_URL
         value: https://apex-core-backend.onrender.com
 
-  - type: static_site
+  - type: web
     name: apex-core-admin
+    runtime: static
     rootDir: admin
     buildCommand: npm install && npm run build
-    publishDir: dist
+    staticPublishPath: dist
     envVars:
       - key: VITE_API_URL
         value: https://apex-core-backend.onrender.com
