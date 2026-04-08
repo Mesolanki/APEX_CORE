@@ -29,16 +29,16 @@ const DriveBackground = ({ children, isAccelerating }) => {
     }));
 
     return (
-        <div className="relative min-h-screen w-full bg-[#050810] overflow-hidden flex items-center justify-between font-mono">
+        <div className="relative min-h-screen w-full bg-[#050810] overflow-hidden flex items-center justify-center lg:justify-between font-mono">
 
             {/* 1. Static Sky & Sunset Glow */}
-            <div className="absolute top-0 inset-x-0 h-[65%] bg-gradient-to-b from-[#0a0f1c] via-[#111827] to-[#1e293b] z-0">
-                <div className="absolute bottom-10 right-[25%] w-[500px] h-[200px] bg-orange-600/20 blur-[100px] rounded-full" />
-                <div className="absolute bottom-20 right-[40%] w-64 h-64 bg-cyan-500/10 blur-[80px] rounded-full" />
+            <div className="absolute top-0 inset-x-0 h-full lg:h-[65%] bg-gradient-to-b from-[#020202] via-[#050810] to-[#020202] lg:from-[#0a0f1c] lg:via-[#111827] lg:to-[#1e293b] z-0">
+                <div className="absolute bottom-10 right-[25%] w-[500px] h-[200px] bg-cyan-600/10 lg:bg-orange-600/20 blur-[100px] rounded-full" />
+                <div className="absolute top-20 left-[10%] w-64 h-64 bg-cyan-500/5 lg:bg-cyan-500/10 blur-[80px] rounded-full" />
             </div>
 
-            {/* 2. Distant Parallax Skyline */}
-            <div className="absolute top-[35%] left-0 w-full h-[30%] overflow-hidden z-0 opacity-40">
+            {/* 2. Distant Parallax Skyline (Desktop Only) */}
+            <div className="hidden lg:block absolute top-[35%] left-0 w-full h-[30%] overflow-hidden z-0 opacity-40">
                 <motion.div
                     className="flex items-end h-full w-[200vw]"
                     animate={{ x: ['0vw', '-100vw'] }}
@@ -51,8 +51,8 @@ const DriveBackground = ({ children, isAccelerating }) => {
                 </motion.div>
             </div>
 
-            {/* 3. The Multi-Layered Racing Track */}
-            <div className="absolute bottom-0 w-full h-[35%] bg-[#0f1115] z-10 flex flex-col justify-start overflow-hidden border-t-2 border-gray-800">
+            {/* 3. The Multi-Layered Racing Track (Desktop Only) */}
+            <div className="hidden lg:flex absolute bottom-0 w-full h-[35%] bg-[#0f1115] z-10 flex flex-col justify-start overflow-hidden border-t-2 border-gray-800">
 
                 {/* Track Fencing (Background Blur) */}
                 <motion.div
@@ -77,9 +77,9 @@ const DriveBackground = ({ children, isAccelerating }) => {
                 />
             </div>
 
-            {/* 4. The Precision Porsche 911 (SVG Masterpiece) */}
+            {/* 4. The Precision Porsche 911 (Desktop Only) */}
             <motion.div
-                className="absolute bottom-[16%] left-[-15%] md:left-[5%] z-20 w-[450px] md:w-[650px] flex items-end"
+                className="hidden lg:flex absolute bottom-[16%] left-[5%] z-20 w-[650px] items-end"
                 animate={
                     isAccelerating
                         ? { x: '150vw', rotateZ: -3, y: 15 } // Squats hard on rear suspension and launches
@@ -235,8 +235,8 @@ const DriveBackground = ({ children, isAccelerating }) => {
                 </svg>
             </motion.div>
 
-            {/* 5. Speed Lines (Extreme Foreground Blur) */}
-            <div className="absolute inset-0 z-30 pointer-events-none overflow-hidden">
+            {/* 5. Speed Lines (Desktop Only) */}
+            <div className="hidden lg:block absolute inset-0 z-30 pointer-events-none overflow-hidden">
                 {speedLines.map((line) => (
                     <motion.div
                         key={line.id}
@@ -255,7 +255,7 @@ const DriveBackground = ({ children, isAccelerating }) => {
 
             {/* 6. Form Container Overlay */}
             <motion.div
-                className="relative z-40 w-full h-full flex justify-end items-center pr-6 md:pr-24 pointer-events-auto"
+                className="relative z-40 w-full h-full flex justify-center lg:justify-end items-center px-6 lg:pr-24 pointer-events-auto"
                 animate={{
                     opacity: isAccelerating ? 0 : 1,
                     x: isAccelerating ? 50 : 0,
