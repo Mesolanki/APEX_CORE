@@ -1,7 +1,10 @@
 import axios from 'axios';
 
+const baseURL = import.meta.env.VITE_API_URL || 'https://apex-core-backend.onrender.com';
+console.log(`>>> [Network_Uplink]: Targeting API at ${baseURL}`);
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'https://apex-core-backend.onrender.com'
+  baseURL
 });
 
 api.interceptors.request.use((config) => {

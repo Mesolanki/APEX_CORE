@@ -72,14 +72,20 @@ const addUser = async (req, res) => {
             `
         };
 
-        await transporter.sendMail(mailOptions);
-        
-        // Note: Password hashing is handled by the Pre-Save hook in User_Model.js
+        let isVerifiedNow = false;
+        try {
+            await transporter.sendMail(mailOptions);
+        } catch (mailErr) {
+            console.warn(">>> [Warning]: Email failure. AUTO-VERIFYING user for testing/development.");
+            isVerifiedNow = true;
+        }
+
         await User.create({
             username,
             email: normalizedEmail,
             password,
             otp,
+            isVerified: isVerifiedNow,
             otpExpires
         });
 

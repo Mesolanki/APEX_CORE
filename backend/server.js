@@ -12,6 +12,7 @@ process.on('unhandledRejection', (reason, promise) => {
 console.log(`\n>>> [BOOT]: ENGINE_INITIALIZING... (Time: ${new Date().toISOString()})`);
 require("dotenv").config();
 const express = require("express");
+const mongoose = require("mongoose");
 const app = express();
 
 const { connectDB } = require("./config/db.js");
@@ -36,6 +37,24 @@ if (missingEnvVars.length) {
 // 🛡️ Explicitly connect to database
 connectDB();
 
+// 🩺 SYSTEM DIAGNOSTICS ROUTE (For Render Debugging)
+app.get("/api/diagnostics", (req, res) => {
+    res.json({
+        status: "RUNNING",
+        database: mongoose.connection.readyState === 1 ? "CONNECTED" : "DISCONNECTED",
+        environment: {
+            PORT: process.env.PORT || "8050",
+            FRONTEND_URL: process.env.FRONTEND_URL ? "SET" : "MISSING",
+            ADMIN_URL: process.env.ADMIN_URL ? "SET" : "MISSING",
+            JWT_SECRET: process.env.JWT_SECRET ? "SET" : "MISSING",
+            MONGO_URI: process.env.MONGO_URI ? "SET" : "MISSING",
+            EMAIL_STRATEGY: (process.env.EMAIL_USER && process.env.EMAIL_PASS) ? "ONLINE" : "OFFLINE"
+        },
+        uptime: process.uptime(),
+        timestamp: new Date().toISOString()
+    });
+});
+
 
 
 
@@ -50,8 +69,19 @@ const allowedOrigins = [
     process.env.ADMIN_URL
 ].filter(Boolean);
 
+console.log(`>>> [System]: Allowed Origins initialized: ${allowedOrigins.join(", ") || "NONE (Localhost ONLY)"}`);
+
 app.use(cors({
-    origin: allowedOrigins,
+    origin: (origin, callback) => {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.indexOf(origin) !== -1 || origin.includes("onrender.com")) {
+            callback(null, true);
+        } else {
+            console.warn(`>>> [Security]: Blocked request from unauthorized origin: ${origin}`);
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     credentials: true
 }));
 
@@ -68,6 +98,10 @@ app.use('/api/games', gameRoute);
 app.use('/api/events', eventRoute);
 app.use('/api/drivers', driverRoute);
 app.use("/user", U_route);
+
+app.get("/", (req, res) => {
+    res.json({ message: "APEX_CORE_API_ONLINE", time: new Date().toISOString() });
+});
 
 app.get("/backend", (req, res) => {
     console.log(`>>> [Ping]: Health connection received at ${new Date().toISOString()}`);
