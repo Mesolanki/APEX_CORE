@@ -10,7 +10,11 @@ function Navbar() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [searchQ, setSearchQ] = useState('');
 
-    const isAuthenticated = !!localStorage.getItem('token');
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+    useEffect(() => {
+        setIsAuthenticated(!!localStorage.getItem('token'));
+    }, [location.pathname]);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -222,14 +226,14 @@ function Navbar() {
                                     </button>
                                 ) : (
                                     <div className="flex flex-col gap-4 mt-2">
-                                        <Link to="/login" className="text-xs font-black text-gray-500 hover:text-white uppercase tracking-[0.2em] text-center border border-gray-800 py-4">
-                                            Login
+                                        <Link to="/login" className="interactive-card text-xs font-black text-gray-200 hover:text-white uppercase tracking-[0.2em] text-center border border-gray-800 bg-[#0a0a0a] py-4 transition-colors">
+                                            SECURE_LOGIN
                                         </Link>
                                         <Link
                                             to="/signup"
-                                            className="text-center py-4 bg-cyan-600 text-white text-xs font-black uppercase tracking-[0.2em] border border-cyan-500 hover:bg-cyan-700 transition-colors"
+                                            className="interactive-card text-center py-4 bg-cyan-600 text-white text-xs font-black uppercase tracking-[0.2em] border border-cyan-500 hover:bg-white hover:text-black transition-all shadow-[0_0_20px_rgba(6,182,212,0.3)]"
                                         >
-                                            Initiate
+                                            INITIATE_SESSION
                                         </Link>
                                     </div>
                                 )}
