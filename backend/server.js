@@ -103,9 +103,21 @@ app.get("/", (req, res) => {
     res.json({ message: "APEX_CORE_API_ONLINE", time: new Date().toISOString() });
 });
 
+app.get("/diagnostics", (req, res) => res.redirect("/api/diagnostics"));
+
 app.get("/backend", (req, res) => {
     console.log(`>>> [Ping]: Health connection received at ${new Date().toISOString()}`);
     res.send("Terminal_Online");
+});
+
+// 🛠️ CATCH-ALL 404 for debugging
+app.use((req, res) => {
+    console.warn(`>>> [404 Error]: ${req.method} ${req.url} was not found on this server.`);
+    res.status(404).json({ 
+        error: "Route_Not_Found", 
+        path: req.url,
+        instruction: "Ensure you are targeting the BACKEND URL, not the frontend."
+    });
 });
 
 // 🛠️ USE SYSTEM PORT (CRITICAL FOR RENDER PROXY)
