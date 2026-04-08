@@ -80,7 +80,7 @@ const addUser = async (req, res) => {
             isVerifiedNow = true;
         }
 
-        await User.create({
+        const user = await User.create({
             username,
             email: normalizedEmail,
             password,
@@ -89,7 +89,10 @@ const addUser = async (req, res) => {
             otpExpires
         });
 
-        res.status(201).json({ message: "User_Created_Verify_OTP" });
+        // 🛠️ AUTO-LOGIN ON REGISTRATION (For Dev/Render)
+        const token = generateToken(user._id, user.email);
+
+        res.status(201).json({ message: "User_Created_Successfully", token });
     } catch (error) {
         console.error(">>> [Registration_Error]:", error);
         return res.status(500).json({ message: "Registration_System_Failure" });

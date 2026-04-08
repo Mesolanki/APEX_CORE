@@ -37,9 +37,16 @@ function Signup() {
                 password: formData.password
             };
 
-            await api.post('/user/signup', payload);
-            localStorage.setItem('pendingEmail', payload.email);
-            navigate('/verify-otp');
+            const response = await api.post('/user/signup', payload);
+            
+            if (response.data.token) {
+                 localStorage.setItem('token', response.data.token);
+                 setIsAccelerating(true);
+                 setTimeout(() => navigate('/'), 1000);
+            } else {
+                 localStorage.setItem('pendingEmail', payload.email);
+                 navigate('/verify-otp');
+            }
         } catch (error) {
             const serverError = error.response?.data?.message || "SYSTEM FAILURE";
             setMessage(serverError.replace(/_/g, ' '));

@@ -75,7 +75,11 @@ app.use(cors({
     origin: (origin, callback) => {
         // Allow requests with no origin (like mobile apps or curl requests)
         if (!origin) return callback(null, true);
-        if (allowedOrigins.indexOf(origin) !== -1 || origin.includes("onrender.com")) {
+        
+        const isRender = origin.includes("onrender.com");
+        const isLocal = origin.startsWith("http://localhost");
+
+        if (isRender || isLocal || allowedOrigins.indexOf(origin) !== -1) {
             callback(null, true);
         } else {
             console.warn(`>>> [Security]: Blocked request from unauthorized origin: ${origin}`);
@@ -122,12 +126,23 @@ app.use((req, res) => {
 
 // 🛠️ USE SYSTEM PORT (CRITICAL FOR RENDER PROXY)
 const PORT = process.env.PORT || 8050;
-app.listen(PORT, '0.0.0.0', () => {
-    console.log(`\n*****************************************`);
-    console.log(`>>> [System]: Server Online on Port ${PORT}`);
-    console.log(`>>> [System]: Listening on 0.0.0.0 (Public)`);
-    console.log(`*****************************************\n`);
-});
+
+async function startServer() {
+    try {
+        await connectDB();
+        app.listen(PORT, '0.0.0.0', () => {
+            console.log(`\n*****************************************`);
+            console.log(`>>> [System]: Server Online on Port ${PORT}`);
+            console.log(`>>> [System]: Listening on 0.0.0.0 (Public)`);
+            console.log(`*****************************************\n`);
+        });
+    } catch (err) {
+        console.error(">>> [Fatal]: Server failed to start due to DB connection error.");
+        process.exit(1);
+    }
+}
+
+startServer();
 
 // 💓 Heartbeat to prevent log silence
 setInterval(() => {
