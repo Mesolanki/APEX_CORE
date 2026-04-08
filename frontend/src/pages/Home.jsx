@@ -350,16 +350,16 @@ function Home() {
                 <div className="relative w-full max-w-6xl h-full flex items-center justify-center px-4">
                     
                     {/* PHASE 1: SIDE (FRONT) */}
-                    <div className="car-1 absolute w-[95%] md:w-[85%] h-[60%] md:h-[70%] flex items-center justify-center z-10 transition-all duration-700">
+                    <div className="car-1 absolute w-[95%] md:w-[85%] h-[50%] md:h-[70%] flex items-center justify-center z-10 transition-all duration-700 top-1/2 -translate-y-[60%] lg:top-auto lg:translate-y-0">
                         <motion.img 
                             animate={{ x: [0, -2, 2, 0], filter: ["hue-rotate(0deg)", "hue-rotate(10deg)", "hue-rotate(-10deg)", "hue-rotate(0deg)"] }}
                             transition={{ duration: 0.2, repeat: Infinity, repeatType: "mirror", repeatDelay: 3 }}
-                            src={`${import.meta.env.BASE_URL}car-side.png`} className="w-full h-full object-contain drop-shadow-[0_0_30px_rgba(220,38,38,0.2)] md:scale-125 hover:brightness-125 transition-all" alt="LH Side" 
+                            src={`${import.meta.env.BASE_URL}car-side.png`} className="w-full h-full object-contain drop-shadow-[0_0_30px_rgba(220,38,38,0.2)] lg:scale-125 hover:brightness-125 transition-all" alt="LH Side" 
                         />
                     </div>
-                    <div className="txt-1 absolute left-4 md:left-10 z-20 border-l-4 border-cyan-500 px-6 py-4 glass-card shadow-2xl transition-transform duration-300 group-hover/scan:translate-y-[-10px]">
+                    <div className="txt-1 absolute bottom-20 left-4 right-4 md:bottom-auto md:left-10 md:right-auto z-20 border-l-4 border-cyan-500 px-6 py-4 glass-card shadow-2xl transition-transform duration-300 group-hover/scan:translate-y-[-10px]">
                         <span className="block text-[10px] text-cyan-500 font-bold uppercase tracking-[0.3em] mb-1">DATA: ALPHA</span>
-                        <span className="block text-2xl md:text-3xl font-black text-white italic leading-tight uppercase tracking-tighter">Aerodynamic_Force</span>
+                        <span className="block text-xl md:text-3xl font-black text-white italic leading-tight uppercase tracking-tighter">Aerodynamic_Force</span>
                         <div className="mt-3 flex flex-col gap-1">
                             <span className="text-[9px] text-gray-400 uppercase tracking-widest flex items-center gap-2"><div className="w-1 h-1 bg-cyan-600" /> DRAG_INDEX: 0.24</span>
                             <span className="text-[9px] text-gray-400 uppercase tracking-widest flex items-center gap-2"><div className="w-1 h-1 bg-cyan-600" /> VECTOR: STABLE</span>
@@ -367,33 +367,33 @@ function Home() {
                     </div>
 
                     {/* PHASE 2: TOP DOWN */}
-                    <div className="car-2 absolute w-[60%] md:w-[50%] h-[85%] md:h-[95%] flex items-center justify-center z-10 opacity-0">
+                    <div className="car-2 absolute w-[75%] md:w-[50%] h-[80%] md:h-[95%] flex items-center justify-center z-10 opacity-0 top-1/2 -translate-y-[60%] lg:top-auto lg:translate-y-0">
                          <motion.img 
                             animate={{ opacity: [1, 0.8, 1, 0.9, 1] }}
                             transition={{ duration: 0.3, repeat: Infinity, repeatDelay: 2 }}
-                            src={`${import.meta.env.BASE_URL}car-top.png`} className="w-full h-full object-contain drop-shadow-[0_0_40px_rgba(255,255,255,0.1)] md:scale-125" alt="Top View" 
+                            src={`${import.meta.env.BASE_URL}car-top.png`} className="w-full h-full object-contain drop-shadow-[0_0_40px_rgba(255,255,255,0.1)] lg:scale-125" alt="Top View" 
                          />
                     </div>
-                    <div className="txt-2 absolute right-4 md:right-10 z-20 border-r-4 border-white px-6 py-4 glass-card shadow-2xl opacity-0 text-right">
+                    <div className="txt-2 absolute bottom-20 left-4 right-4 md:bottom-auto md:right-10 md:left-auto z-20 border-r-4 border-white px-6 py-4 glass-card shadow-2xl opacity-0 text-center md:text-right">
                         <span className="block text-[10px] text-cyan-400 font-bold uppercase tracking-[0.3em] mb-1">DATA: SIGMA</span>
-                        <span className="block text-2xl md:text-3xl font-black text-white italic leading-tight uppercase tracking-tighter">Structural_Grid</span>
-                        <div className="mt-3 flex flex-col gap-1 items-end">
-                            <span className="text-[9px] text-gray-400 uppercase tracking-widest flex items-center gap-2">SYMMETRY: 100% <div className="w-1 h-1 bg-white" /></span>
-                            <span className="text-[9px] text-gray-400 uppercase tracking-widest flex items-center gap-2">ALIGNMENT: TRUED <div className="w-1 h-1 bg-white" /></span>
+                        <span className="block text-xl md:text-3xl font-black text-white italic leading-tight uppercase tracking-tighter">Structural_Grid</span>
+                        <div className="mt-3 flex flex-col gap-1 items-center md:items-end">
+                            <span className="text-[9px] text-gray-400 uppercase tracking-widest flex items-center gap-2">SYMMETRY: 100% <div className="hidden md:block w-1 h-1 bg-white" /></span>
+                            <span className="text-[9px] text-gray-400 uppercase tracking-widest flex items-center gap-2">ALIGNMENT: TRUED <div className="hidden md:block w-1 h-1 bg-white" /></span>
                         </div>
                     </div>
 
                     {/* PHASE 3: EXPLODED / PARTS */}
-                    <div className="car-3 absolute w-[100%] md:w-[90%] h-[70%] md:h-[80%] flex items-center justify-center z-10 opacity-0">
+                    <div className="car-3 absolute w-[100%] md:w-[90%] h-[60%] md:h-[80%] flex items-center justify-center z-10 opacity-0 top-1/2 -translate-y-[60%] lg:top-auto lg:translate-y-0">
                         <motion.img 
                             animate={{ x: [-1, 1, -1, 0], y: [1, -1, 1, 0] }}
                             transition={{ duration: 0.1, repeat: Infinity, repeatDelay: 4 }}
-                            src={`${import.meta.env.BASE_URL}car-detail.png`} className="w-full h-full object-contain drop-shadow-[0_0_50px_rgba(0,242,255,0.2)] md:scale-125" alt="Exploded Parts" 
+                            src={`${import.meta.env.BASE_URL}car-detail.png`} className="w-full h-full object-contain drop-shadow-[0_0_50px_rgba(0,242,255,0.2)] lg:scale-125" alt="Exploded Parts" 
                         />
                     </div>
-                    <div className="txt-3 absolute left-4 md:left-10 z-20 border-l-4 border-cyan-500 px-6 py-4 glass-card shadow-2xl opacity-0">
+                    <div className="txt-3 absolute bottom-20 left-4 right-4 md:bottom-auto md:left-10 md:right-auto z-20 border-l-4 border-cyan-500 px-6 py-4 glass-card shadow-2xl opacity-0">
                         <span className="block text-[10px] text-cyan-500 font-bold uppercase tracking-[0.3em] mb-1">DATA: GAMMA</span>
-                        <span className="block text-2xl md:text-3xl font-black text-white italic leading-tight uppercase tracking-tighter">Core_Telemetry</span>
+                        <span className="block text-xl md:text-3xl font-black text-white italic leading-tight uppercase tracking-tighter">Core_Telemetry</span>
                         <div className="mt-3 flex flex-col gap-1">
                             <span className="text-[9px] text-gray-400 uppercase tracking-widest flex items-center gap-2"><div className="w-1 h-1 bg-cyan-600" /> SYSTEM: ACTIVE</span>
                             <span className="text-[9px] text-gray-400 uppercase tracking-widest flex items-center gap-2"><div className="w-1 h-1 bg-cyan-600" /> LINK: ENCRYPTED</span>
