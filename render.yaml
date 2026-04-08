@@ -27,7 +27,7 @@ services:
       - key: GOOGLE_CLIENT_SECRET
         sync: false
 
-  - type: static
+  - type: static_site
     name: apex-core-frontend
     rootDir: frontend
     buildCommand: npm install && npm run build
@@ -36,7 +36,7 @@ services:
       - key: VITE_API_URL
         value: https://apex-core-backend.onrender.com
 
-  - type: static
+  - type: static_site
     name: apex-core-admin
     rootDir: admin
     buildCommand: npm install && npm run build
