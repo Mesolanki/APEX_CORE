@@ -36,6 +36,10 @@ services:
     envVars:
       - key: VITE_API_URL
         value: https://apex-core-backend-lyoj.onrender.com
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
 
   - type: web
     name: apex-core-admin
@@ -46,3 +50,7 @@ services:
     envVars:
       - key: VITE_API_URL
         value: https://apex-core-backend-lyoj.onrender.com
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
