@@ -121,7 +121,7 @@ function Navbar() {
 
                     <div className="hidden sm:block h-4 w-px bg-gray-800" />
 
-                    <div className="flex items-center gap-3">
+                    <div className="hidden lg:flex items-center gap-3">
                         <button
                             onClick={() => navigate(isAuthenticated ? '/profile' : '/login')}
                             className="flex items-center gap-2 pl-1 pr-4 py-1.5 bg-[#0a0a0a] border border-gray-800 hover:border-cyan-600/50 transition-colors group"
@@ -161,7 +161,7 @@ function Navbar() {
 
                     <button
                         type="button"
-                        className="lg:hidden text-gray-500 hover:text-cyan-500 p-1 transition-colors"
+                        className="lg:hidden text-gray-400 hover:text-cyan-500 p-2 border border-gray-900 bg-[#0a0a0a] transition-colors"
                         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                         aria-label="Menu"
                     >
@@ -215,15 +215,20 @@ function Navbar() {
 
                             <hr className="border-gray-900 my-4" />
 
-                            <div className="sm:hidden flex flex-col gap-3">
+                            <div className="flex flex-col gap-3">
                                 {isAuthenticated ? (
-                                    <button
-                                        type="button"
-                                        onClick={handleLogout}
-                                        className="text-xs font-black text-red-600 hover:text-red-400 uppercase tracking-widest text-left py-2"
-                                    >
-                                        Terminate_Session
-                                    </button>
+                                    <>
+                                        <Link to="/profile" className="interactive-card text-xs font-black text-white bg-cyan-900/10 border border-cyan-800 uppercase tracking-[0.2em] text-center py-4">
+                                            User_Dashboard
+                                        </Link>
+                                        <button
+                                            type="button"
+                                            onClick={handleLogout}
+                                            className="text-[10px] font-black text-red-600 hover:text-red-400 uppercase tracking-widest text-center py-2"
+                                        >
+                                            Terminate_Link
+                                        </button>
+                                    </>
                                 ) : (
                                     <div className="flex flex-col gap-4 mt-2">
                                         <Link to="/login" className="interactive-card text-xs font-black text-gray-200 hover:text-white uppercase tracking-[0.2em] text-center border border-gray-800 bg-[#0a0a0a] py-4 transition-colors">
