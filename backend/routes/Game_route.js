@@ -27,7 +27,7 @@ router.post('/detail/:category/:id/review', postGameReview);
 router.put('/item/:category/:id', updateGameItem);
 router.delete('/item/:category/:id', deleteGameItem);
 router.get('/', getGameData);
-router.post('/seed', seedGameData);
+router.get('/seed', seedGameData);
 
 router.post('/add-vehicle', addMarketItem);
 router.post('/add-event', addLiveEvent); 
