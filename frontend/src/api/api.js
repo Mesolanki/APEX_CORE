@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const baseURL = import.meta.env.VITE_API_URL || 'https://apex-core-backend.onrender.com';
+const baseURL = import.meta.env.VITE_API_URL || 'https://apex-core-backend-lyoj.onrender.com';
 console.log(`>>> [Network_Uplink]: Targeting API at ${baseURL}`);
 
 const api = axios.create({

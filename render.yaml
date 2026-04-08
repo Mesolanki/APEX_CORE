@@ -21,7 +21,7 @@ services:
       - key: ADMIN_URL
         value: https://apex-core-admin.onrender.com
       - key: BACKEND_URL
-        value: https://apex-core-backend.onrender.com
+        value: https://apex-core-backend-lyoj.onrender.com
       - key: GOOGLE_CLIENT_ID
         sync: false
       - key: GOOGLE_CLIENT_SECRET
@@ -35,7 +35,7 @@ services:
     staticPublishPath: dist
     envVars:
       - key: VITE_API_URL
-        value: https://apex-core-backend.onrender.com
+        value: https://apex-core-backend-lyoj.onrender.com
 
   - type: web
     name: apex-core-admin
@@ -45,4 +45,4 @@ services:
     staticPublishPath: dist
     envVars:
       - key: VITE_API_URL
-        value: https://apex-core-backend.onrender.com
+        value: https://apex-core-backend-lyoj.onrender.com
