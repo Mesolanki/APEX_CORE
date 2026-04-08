@@ -119,14 +119,16 @@ function LiveEvents() {
     return (
         <div className="relative min-h-screen bg-[#020202] text-white font-mono overflow-hidden cursor-none pt-20">
             
-            {/* GSAP TACTICAL CURSOR */}
-            <div ref={cursorRef} className="fixed top-0 left-0 w-8 h-8 rounded-full border border-cyan-500/50 pointer-events-none z-[9999] flex items-center justify-center transition-colors mix-blend-difference">
-                <div className="absolute top-[-2px] w-[1px] h-2 bg-cyan-500" />
-                <div className="absolute bottom-[-2px] w-[1px] h-2 bg-cyan-500" />
-                <div className="absolute left-[-2px] h-[1px] w-2 bg-cyan-500" />
-                <div className="absolute right-[-2px] h-[1px] w-2 bg-cyan-500" />
+            {/* GSAP TACTICAL CURSOR (Desktop Only) */}
+            <div className="hidden lg:block">
+                <div ref={cursorRef} className="fixed top-0 left-0 w-8 h-8 rounded-full border border-cyan-500/50 pointer-events-none z-[9999] flex items-center justify-center transition-colors mix-blend-difference">
+                    <div className="absolute top-[-2px] w-[1px] h-2 bg-cyan-500" />
+                    <div className="absolute bottom-[-2px] w-[1px] h-2 bg-cyan-500" />
+                    <div className="absolute left-[-2px] h-[1px] w-2 bg-cyan-500" />
+                    <div className="absolute right-[-2px] h-[1px] w-2 bg-cyan-500" />
+                </div>
+                <div ref={cursorDotRef} className="fixed top-0 left-0 w-1.5 h-1.5 bg-white pointer-events-none z-[9999] rounded-full shadow-[0_0_10px_rgba(255,255,255,1)] mix-blend-difference" />
             </div>
-            <div ref={cursorDotRef} className="fixed top-0 left-0 w-1.5 h-1.5 bg-white pointer-events-none z-[9999] rounded-full shadow-[0_0_10px_rgba(255,255,255,1)] mix-blend-difference" />
 
             {/* CRT Scanline Overlay */}
             <div className="scanlines pointer-events-none fixed inset-0 z-50 opacity-[0.15] mix-blend-overlay" />
@@ -158,7 +160,7 @@ function LiveEvents() {
             <div className="relative z-10 w-full h-[calc(100vh-80px)] flex flex-col justify-center max-w-[1400px] mx-auto px-6 lg:px-12">
                 
                 {/* Header Bug */}
-                <div className="absolute top-10 left-6 lg:left-12 flex items-center gap-3 text-cyan-600">
+                <div className="hidden sm:flex absolute top-10 left-6 lg:left-12 items-center gap-3 text-cyan-600">
                     <FiRadio className="animate-pulse" />
                     <span className="text-[10px] font-black uppercase tracking-[0.4em] border border-cyan-900/50 bg-cyan-950/30 px-3 py-1">
                         LIVE_BROADCAST_FEED
@@ -187,7 +189,7 @@ function LiveEvents() {
                                 </div>
                             </div>
 
-                            <h1 className="text-5xl sm:text-7xl lg:text-[7rem] font-black italic uppercase tracking-tighter mb-6 text-white drop-shadow-[0_0_20px_rgba(0,242,255,0.4)] leading-[0.9]">
+                             <h1 className="text-3xl sm:text-5xl md:text-7xl lg:text-[7rem] font-black italic uppercase tracking-tighter mb-6 text-white drop-shadow-[0_0_20px_rgba(0,242,255,0.4)] leading-[0.9]">
                                 <CyberText text={currentEvent.target?.replace(/_/g, ' ') || currentEvent.title || 'UNKNOWN'} />
                             </h1>
                             
@@ -195,22 +197,22 @@ function LiveEvents() {
                                 {currentEvent.description || "Transmitting raw telemetry stream from the sector. Prepare for system override."}
                             </p>
 
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mb-12">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mb-12">
                                 <div className="border border-cyan-900/50 bg-[#050505]/80 backdrop-blur p-4">
                                     <p className="text-[8px] text-gray-500 font-bold uppercase tracking-[0.3em] mb-1">ENTRY_FEE</p>
-                                    <p className="text-lg font-black text-gray-200">{currentEvent.entryPrize || 'Free'}</p>
+                                    <p className="text-base sm:text-lg font-black text-gray-200">{currentEvent.entryPrize || 'Free'}</p>
                                 </div>
                                 <div className="border border-green-900/50 bg-[#050505]/80 backdrop-blur p-4 relative overflow-hidden">
                                     <div className="absolute top-0 right-0 w-8 h-8 bg-green-500/10 rounded-bl-full" />
                                     <p className="text-[8px] text-green-700 font-bold uppercase tracking-[0.3em] mb-1">PRIZE_POOL</p>
-                                    <p className="text-lg font-black text-green-400">{currentEvent.winningPrize || 'TBD'}</p>
+                                    <p className="text-base sm:text-lg font-black text-green-400">{currentEvent.winningPrize || 'TBD'}</p>
                                 </div>
                                 <div className="border border-gray-800 bg-[#050505]/80 backdrop-blur p-4">
                                     <p className="text-[8px] text-gray-500 font-bold uppercase tracking-[0.3em] mb-1">REGION</p>
-                                    <p className="text-lg font-black text-white">{currentEvent.region || currentEvent.location || 'GLOBAL'}</p>
+                                    <p className="text-base sm:text-lg font-black text-white">{currentEvent.region || currentEvent.location || 'GLOBAL'}</p>
                                 </div>
                                 <div className="border border-cyan-600 bg-cyan-600/10 backdrop-blur p-0 flex items-stretch">
-                                    <Link to={`/live-events/${currentEvent._id}`} className="interactive w-full h-full flex items-center justify-center gap-2 hover:bg-cyan-600 hover:text-white text-cyan-500 transition-colors font-black text-[10px] uppercase tracking-[0.2em] group">
+                                    <Link to={`/live-events/${currentEvent._id}`} className="interactive w-full h-full min-h-[50px] flex items-center justify-center gap-2 hover:bg-cyan-600 hover:text-white text-cyan-500 transition-colors font-black text-[10px] uppercase tracking-[0.2em] group">
                                         <FiCrosshair className="text-xl group-hover:rotate-90 transition-transform" />
                                         ENTER
                                     </Link>
@@ -269,8 +271,10 @@ function LiveEvents() {
                     background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.2));
                     background-size: 100% 4px;
                 }
-                body { cursor: none !important; }
-                a, button, select, input, .interactive { cursor: none !important; }
+                @media (min-width: 1024px) {
+                    body { cursor: none !important; }
+                    a, button, select, input, .interactive { cursor: none !important; }
+                }
             `}} />
         </div>
     );

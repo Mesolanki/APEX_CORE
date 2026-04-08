@@ -140,14 +140,16 @@ function TopPlayers() {
     return (
         <div className="min-h-screen bg-[#020202] text-gray-200 font-mono overflow-x-hidden selection:bg-cyan-600 selection:text-white cursor-none pt-24 pb-32">
             
-            {/* --- CUSTOM CURSOR --- */}
-            <div ref={cursorRef} className="fixed top-0 left-0 w-8 h-8 rounded-full border border-cyan-500/50 pointer-events-none z-[9999] flex items-center justify-center transition-colors">
-                <div className="absolute top-[-2px] w-[1px] h-2 bg-cyan-500" />
-                <div className="absolute bottom-[-2px] w-[1px] h-2 bg-cyan-500" />
-                <div className="absolute left-[-2px] h-[1px] w-2 bg-cyan-500" />
-                <div className="absolute right-[-2px] h-[1px] w-2 bg-cyan-500" />
+            {/* --- CUSTOM CURSOR (Only on Desktop) --- */}
+            <div className="hidden lg:block">
+                <div ref={cursorRef} className="fixed top-0 left-0 w-8 h-8 rounded-full border border-cyan-500/50 pointer-events-none z-[9999] flex items-center justify-center transition-colors">
+                    <div className="absolute top-[-2px] w-[1px] h-2 bg-cyan-500" />
+                    <div className="absolute bottom-[-2px] w-[1px] h-2 bg-cyan-500" />
+                    <div className="absolute left-[-2px] h-[1px] w-2 bg-cyan-500" />
+                    <div className="absolute right-[-2px] h-[1px] w-2 bg-cyan-500" />
+                </div>
+                <div ref={cursorDotRef} className="fixed top-0 left-0 w-1.5 h-1.5 bg-white pointer-events-none z-[9999] rounded-full shadow-[0_0_10px_rgba(255,255,255,1)]" />
             </div>
-            <div ref={cursorDotRef} className="fixed top-0 left-0 w-1.5 h-1.5 bg-white pointer-events-none z-[9999] rounded-full shadow-[0_0_10px_rgba(255,255,255,1)]" />
 
             {/* CRT Scanline Overlay */}
             <div className="scanlines pointer-events-none fixed inset-0 z-[90] opacity-[0.15]" />
@@ -161,7 +163,7 @@ function TopPlayers() {
                         <span className="text-cyan-500 text-[10px] font-bold tracking-[0.4em] uppercase">GLOBAL_RANKINGS</span>
                     </div>
                     
-                    <h1 className="text-5xl sm:text-7xl md:text-[6rem] font-black italic uppercase tracking-tighter mb-6 leading-none text-transparent bg-clip-text bg-gradient-to-b from-white to-cyan-900 drop-shadow-[0_10px_30px_rgba(6,182,212,0.3)]">
+                    <h1 className="text-4xl sm:text-7xl md:text-[6rem] font-black italic uppercase tracking-tighter mb-6 leading-none text-transparent bg-clip-text bg-gradient-to-b from-white to-cyan-900 drop-shadow-[0_10px_30px_rgba(6,182,212,0.3)]">
                         TOP_PLAYERS
                     </h1>
                     
@@ -303,8 +305,10 @@ function TopPlayers() {
                     background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.2));
                     background-size: 100% 4px;
                 }
-                body { cursor: none !important; }
-                a, button, select, input, [role="button"] { cursor: none !important; }
+                @media (min-width: 1024px) {
+                    body { cursor: none !important; }
+                    a, button, select, input, [role="button"] { cursor: none !important; }
+                }
                 `
             }} />
         </div>

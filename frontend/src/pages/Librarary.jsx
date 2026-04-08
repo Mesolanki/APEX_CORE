@@ -166,14 +166,16 @@ function Library() {
     return (
         <div ref={mainRef} className="scoped-cursor-app min-h-screen bg-[#020202] text-gray-200 font-mono overflow-x-hidden selection:bg-cyan-600 selection:text-white relative">
             
-            {/* GSAP TACTICAL CURSOR */}
-            <div ref={cursorRef} className="fixed top-0 left-0 w-8 h-8 rounded-full border border-cyan-500/50 pointer-events-none z-[9999] -translate-x-1/2 -translate-y-1/2 flex items-center justify-center transition-colors">
-                <div className="absolute top-[-2px] w-[1px] h-2 bg-cyan-500" />
-                <div className="absolute bottom-[-2px] w-[1px] h-2 bg-cyan-500" />
-                <div className="absolute left-[-2px] h-[1px] w-2 bg-cyan-500" />
-                <div className="absolute right-[-2px] h-[1px] w-2 bg-cyan-500" />
+            {/* GSAP TACTICAL CURSOR (Only on Desktop) */}
+            <div className="hidden lg:block">
+                <div ref={cursorRef} className="fixed top-0 left-0 w-8 h-8 rounded-full border border-cyan-500/50 pointer-events-none z-[9999] -translate-x-1/2 -translate-y-1/2 flex items-center justify-center transition-colors">
+                    <div className="absolute top-[-2px] w-[1px] h-2 bg-cyan-500" />
+                    <div className="absolute bottom-[-2px] w-[1px] h-2 bg-cyan-500" />
+                    <div className="absolute left-[-2px] h-[1px] w-2 bg-cyan-500" />
+                    <div className="absolute right-[-2px] h-[1px] w-2 bg-cyan-500" />
+                </div>
+                <div ref={cursorDotRef} className="fixed top-0 left-0 w-1.5 h-1.5 bg-white pointer-events-none z-[9999] -translate-x-1/2 -translate-y-1/2 rounded-full shadow-[0_0_10px_rgba(255,255,255,1)]" />
             </div>
-            <div ref={cursorDotRef} className="fixed top-0 left-0 w-1.5 h-1.5 bg-white pointer-events-none z-[9999] -translate-x-1/2 -translate-y-1/2 rounded-full shadow-[0_0_10px_rgba(255,255,255,1)]" />
 
             {/* GSAP Scroll Progress */}
             <div className="scroll-progress fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-cyan-600 to-cyan-400 z-[100] origin-left scale-x-0" />
@@ -193,7 +195,7 @@ function Library() {
                 
                 {/* HUD / TITLE */}
                 <div className="mb-12 md:mb-16 flex flex-col gap-3 reveal-text border-l-4 border-cyan-600 pl-6 md:pl-8">
-                    <h1 className="text-4xl md:text-6xl lg:text-8xl font-black italic tracking-tighter text-white uppercase leading-none">
+                    <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-8xl font-black italic tracking-tighter text-white uppercase leading-none">
                         LIBRARY_VAULT
                     </h1>
                     <p className="text-gray-500 text-[10px] md:text-xs tracking-[0.3em] uppercase bg-black w-fit px-3 py-1 border border-gray-900 mt-2">
@@ -388,12 +390,14 @@ function Library() {
                     -ms-overflow-style: none;
                     scrollbar-width: none;
                 }
-                .scoped-cursor-app, 
-                .scoped-cursor-app a, 
-                .scoped-cursor-app button, 
-                .scoped-cursor-app .interactive-card,
-                .scoped-cursor-app input { 
-                    cursor: none !important; 
+                @media (min-width: 1024px) {
+                    .scoped-cursor-app, 
+                    .scoped-cursor-app a, 
+                    .scoped-cursor-app button, 
+                    .scoped-cursor-app .interactive-card,
+                    .scoped-cursor-app input { 
+                        cursor: none !important; 
+                    }
                 }
                 `
             }} />
