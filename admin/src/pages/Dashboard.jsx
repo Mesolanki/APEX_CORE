@@ -6,29 +6,21 @@ import {
     Package, Star, RefreshCw, AlertCircle
 } from 'lucide-react';
 
-const API = import.meta.env.VITE_API_URL || 'http://localhost:8050';
+const API = import.meta.env.VITE_API_URL || 'https://apex-core-backend.onrender.com';
 
-/* ──────────────────────────────────────────────
-   Helper: parse price string like "59.99_CR" or "$59.99" → number
-──────────────────────────────────────────────── */
+
 function parsePrice(str) {
     if (!str) return 0;
     const num = parseFloat(str.replace(/[^0-9.]/g, ''));
     return isNaN(num) ? 0 : num;
 }
 
-/* ──────────────────────────────────────────────
-   Helper: format currency
-──────────────────────────────────────────────── */
 function fmtMoney(n) {
     if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(2)}M`;
     if (n >= 1_000)     return `$${(n / 1_000).toFixed(1)}K`;
     return `$${n.toFixed(2)}`;
 }
 
-/* ──────────────────────────────────────────────
-   Stat Card
-──────────────────────────────────────────────── */
 const StatCard = ({ title, value, sub, icon: Icon, accent = 'cyan', trend }) => {
     const palette = {
         cyan:    { border: 'border-cyan-900/50',   bg: 'bg-cyan-950/20',   text: 'text-cyan-400',   icon: 'text-cyan-500',   dot: 'bg-cyan-500'   },
@@ -298,10 +290,8 @@ const Dashboard = () => {
                         />
                     </div>
 
-                    {/* ─── MAIN ANALYTICS PANELS ─── */}
                     <div className="grid lg:grid-cols-3 gap-8">
 
-                        {/* Earnings by Developer */}
                         <div className="lg:col-span-2 bg-[#050505] border border-gray-800 p-6">
                             <SectionHead icon={Code2} title="Earnings by Developer" accent="text-cyan-400" />
                             {devLeaderboard.length === 0 ? (
@@ -335,7 +325,6 @@ const Dashboard = () => {
                             )}
                         </div>
 
-                        {/* Events Breakdown */}
                         <div className="bg-[#050505] border border-gray-800 p-6">
                             <SectionHead icon={Calendar} title="Events Breakdown" accent="text-amber-400" />
                             <div className="space-y-3 mb-6">
@@ -375,10 +364,8 @@ const Dashboard = () => {
                         </div>
                     </div>
 
-                    {/* ─── BOTTOM PANELS ─── */}
                     <div className="grid lg:grid-cols-3 gap-8">
 
-                        {/* Top Earning Games */}
                         <div className="lg:col-span-2 bg-[#050505] border border-gray-800 p-6">
                             <SectionHead icon={Star} title="Top Earning Game Titles" accent="text-fuchsia-400" />
                             {topGames.length === 0 ? (
@@ -387,12 +374,10 @@ const Dashboard = () => {
                                 <div className="space-y-3">
                                     {topGames.map((g, i) => (
                                         <div key={g.id || i} className="flex items-center gap-4 border border-gray-900 bg-black p-3 group hover:border-fuchsia-900/40 transition-colors">
-                                            {/* Rank */}
                                             <span className={`text-[10px] font-black w-6 text-center shrink-0 ${i === 0 ? 'text-amber-400' : i === 1 ? 'text-gray-400' : i === 2 ? 'text-amber-700' : 'text-gray-700'}`}>
                                                 {i + 1}
                                             </span>
 
-                                            {/* Thumbnail */}
                                             <div className="w-10 h-10 bg-gray-900 border border-gray-800 shrink-0 overflow-hidden">
                                                 {g.image
                                                     ? <img src={g.image} alt="" className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all" />
@@ -400,14 +385,12 @@ const Dashboard = () => {
                                                 }
                                             </div>
 
-                                            {/* Info */}
                                             <div className="flex-1 min-w-0">
                                                 <p className="text-[11px] font-black text-white truncate">{g.title}</p>
                                                 <p className="text-[9px] text-gray-600 font-bold">{g.developer || 'Unknown Dev'} · {g.downloads || 0} downloads · {g.price}</p>
                                                 <MiniBar pct={(g.earnings / maxGameEarnings) * 100} color="bg-fuchsia-600" />
                                             </div>
 
-                                            {/* Earnings */}
                                             <span className="text-[12px] font-black text-fuchsia-400 shrink-0">{fmtMoney(g.earnings)}</span>
                                         </div>
                                     ))}
@@ -415,9 +398,7 @@ const Dashboard = () => {
                             )}
                         </div>
 
-                        {/* Genre Distribution + System */}
                         <div className="space-y-6">
-                            {/* Genre breakdown */}
                             <div className="bg-[#050505] border border-gray-800 p-6">
                                 <SectionHead icon={Package} title="Games by Genre" accent="text-violet-400" />
                                 {genreList.length === 0 ? (
@@ -437,7 +418,6 @@ const Dashboard = () => {
                                 )}
                             </div>
 
-                            {/* System health */}
                             <div className="bg-[#050505] border border-gray-800 p-6">
                                 <SectionHead icon={Activity} title="System Status" accent="text-green-400" />
                                 <div className="space-y-3">
@@ -458,7 +438,6 @@ const Dashboard = () => {
                         </div>
                     </div>
 
-                    {/* ─── RECENT EVENTS TABLE ─── */}
                     <div className="bg-[#050505] border border-gray-800 p-6">
                         <SectionHead icon={Zap} title="Live Event Enrollments — Detail" accent="text-amber-400" />
                         {events.length === 0 ? (

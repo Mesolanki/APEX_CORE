@@ -56,7 +56,7 @@ const createPost = async (req, res) => {
         let mediaUrl = "";
 
         if (req.file) {
-            const backendUrl = process.env.BACKEND_URL || 'http://localhost:8050';
+            const backendUrl = process.env.BACKEND_URL || 'https://apex-core-backend.onrender.com';
             mediaUrl = `${backendUrl}/uploads/${req.file.filename}`;
         }
 

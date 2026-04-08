@@ -72,7 +72,7 @@ function Login() {
         }
     };
     const handleGoogleAuth = () => {
-        const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:8050';
+        const backendUrl = import.meta.env.VITE_API_URL || 'https://apex-core-backend.onrender.com';
         window.location.href = `${backendUrl}/user/auth/google`;
     };
 

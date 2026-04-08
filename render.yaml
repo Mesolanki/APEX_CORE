@@ -17,10 +17,30 @@ services:
       - key: EMAIL_PASS
         sync: false
       - key: FRONTEND_URL
-        sync: false
+        value: https://apex-core-frontend.onrender.com
       - key: ADMIN_URL
-        sync: false
+        value: https://apex-core-admin.onrender.com
+      - key: BACKEND_URL
+        value: https://apex-core-backend.onrender.com
       - key: GOOGLE_CLIENT_ID
         sync: false
       - key: GOOGLE_CLIENT_SECRET
         sync: false
+
+  - type: static
+    name: apex-core-frontend
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    publishDir: dist
+    envVars:
+      - key: VITE_API_URL
+        value: https://apex-core-backend.onrender.com
+
+  - type: static
+    name: apex-core-admin
+    rootDir: admin
+    buildCommand: npm install && npm run build
+    publishDir: dist
+    envVars:
+      - key: VITE_API_URL
+        value: https://apex-core-backend.onrender.com

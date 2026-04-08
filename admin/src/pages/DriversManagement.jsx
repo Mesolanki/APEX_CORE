@@ -23,7 +23,6 @@ const DriversManagement = () => {
             ]);
             setPlayers(driversRes.data);
             
-            // Combine events from Game DB and Events DB for the dropdown
             const legacyEvents = gamesRes.data?.liveEvents || [];
             const standardEvents = eventsRes.data || [];
             setEvents([...legacyEvents, ...standardEvents]);
